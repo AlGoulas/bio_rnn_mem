@@ -97,23 +97,23 @@ pretrained_folder = []
 #             'train_size': 0.8,  
 #             }
 
-#bin_mem
-# trial_params={
-#             'task_name': 'bin_mem',
-#             'nr_of_trials': 500, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'train_size': 0.8,
-#             }
+#nback_mem
+trial_params={
+            'task_name': 'nback_mem',
+            'nr_of_trials': 500, 
+            'trial_length': 5, 
+            'trial_matching': True,
+            'train_size': 0.8,
+            }
 
 #seq_mem 
-trial_params = {    
-                'task_name': 'seq_mem',       
-                'nr_of_trials': 1000,
-                'low': 0.,
-                'high': 1.,
-                'train_size': 0.8,
-                }
+# trial_params = {    
+#                 'task_name': 'seq_mem',       
+#                 'nr_of_trials': 1000,
+#                 'low': 0.,
+#                 'high': 1.,
+#                 'train_size': 0.8,
+#                 }
 
 # Spacify the common model parameters across tasks.
 # Task-specific model parameters will be specified below.
@@ -148,7 +148,7 @@ if trial_params['task_name'] == 'pic_mem':
     # Parameters out of which all combination will be generated
     params_for_combos['n_back'] = [2, 3, 4]  
     
-if trial_params['task_name'] == 'bin_mem':  
+if trial_params['task_name'] == 'nback_mem':  
     # Update model params based on task
     model_params['input_size'] = 2
     model_params['output_size'] = 3 
@@ -214,7 +214,7 @@ for combo_index, combination in enumerate(all_combos):
         trial_params['pattern_length'] = combination[all_keys.index('pattern_length')]
         
     if (trial_params['task_name'] == 'pic_mem' 
-        or trial_params['task_name'] == 'bin_mem' 
+        or trial_params['task_name'] == 'nback_mem' 
         or trial_params['task_name'] == 'pic_latent_mem'): 
         trial_params['n_back'] = combination[all_keys.index('n_back')]
           
@@ -268,9 +268,9 @@ for combo_index, combination in enumerate(all_combos):
             # if pretrained is selected, then load the pretrained and modify it
             # to perform the task
             if pretrained_folder:
-                # if the task is bin_mem, then we have to instantiate
+                # if the task is nback_mem, then we have to instantiate
                 # a model for the seq_mem task
-                if trial_params.get('task_name') == 'bin_mem':
+                if trial_params.get('task_name') == 'nback_mem':
                     output_size = 1
                     n_last_layers = -1#remove last layer
                     
@@ -282,7 +282,7 @@ for combo_index, combination in enumerate(all_combos):
                             ]
                 
                 # if the task is seq_mem, then we have to instantiate
-                # a model for the bin_mem task 
+                # a model for the nback_mem task 
                 if trial_params.get('task_name') == 'seq_mem':
                     output_size = 3 
                     n_last_layers = -2#remove 2 last layers
@@ -316,7 +316,7 @@ for combo_index, combination in enumerate(all_combos):
                                                 )
                 
                 # Modify the pretrained loaded model, so that it
-                # can perform the bin_mem task  
+                # can perform the nback_mem task  
                 print('\nModifying model...\n') 
                 model = rnnmodels.ModelBio_Modified(
                                                      model = model, 
@@ -347,7 +347,7 @@ for combo_index, combination in enumerate(all_combos):
                 criterion = nn.MSELoss()
             
             if (trial_params['task_name'] == 'pic_mem' 
-                or trial_params['task_name'] == 'bin_mem' 
+                or trial_params['task_name'] == 'nback_mem' 
                 or trial_params['task_name'] == 'pic_latent_mem'):
                 criterion = nn.NLLLoss()
             

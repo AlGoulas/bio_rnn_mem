@@ -7,14 +7,13 @@ import torch
 import auxfun
 import tasks
 
-# Train/validate model in one epoch
 def train_validate_model(
                          model, 
-                         data_generator, 
+                         data_generator = None, 
                          optimizer = None, 
                          criterion = None, 
                          train = True,
-                         calc_null = True,
+                         calc_null = False,
                          batch_size = 32,
                          trim = True,
                          w = None,
@@ -22,6 +21,61 @@ def train_validate_model(
                          task_name = None,
                          device = 'cpu'
                          ):
+    '''
+    Train or validate a model in one epoch
+    
+    Input
+    -----
+    
+    model: instance from the rnn classes in rnnmodels
+    
+    data_generator: object of type torch.utils.data.dataloader.DataLoader
+        for generating the train or validate dataset
+        
+    optimizer: object of torch.optim type
+    
+    criterion: object of torch.nn.modules.loss type
+    
+    train: bool, default True, indicating if the model should be trained(=True)
+        or validated(=False)
+        
+    calc_null: bool, default False, idnciatign if a shuffled null prediction
+        should be calculated
+        
+    batch_size: int, default 32, denotign the size of the batch
+
+    trim: bool, default True, indicatign if the trials should be trimmed and 
+        keep only the memory-related output
+        
+    w: object of torch.Tensor type with shape (N,N) where N is the dimension
+        number of neurons of the hidden recurrent layer
+        
+    metrics: list, default [], of str indicating if additional metrics
+        other than the loss must be estimated
+        
+        Currently accuracy can be specified {'acc'} 
+    
+    task_name: str specifying what type of task is the model trained
+        {'seq_mem', 'pic_mem', 'nback_mem', 'pic_latent_mem'}
+        
+        This is needed to reformat the output for the approapriate loss
+        estimation needed for each task
+    
+    device: str {'cpu', 'gpu'} specifying where the training of the model
+        will take place  
+        
+    Output
+    ------
+    batch_loss: list of floats indicating the loss for each batch 
+        
+    batch_loss_null: list of floats indicating the loss for each batch 
+        based on the shuffled labels (if calc_null=True else [])
+        
+    batch_metrics: list of floats indicating the metric for each batch 
+        
+    batch_metrics_null: list of floats indicating the metric for each batch 
+        based on the shuffled labels (if calc_null=True else [])    
+    '''
        
     batch_loss = []
     batch_loss_null=[]
@@ -33,14 +87,9 @@ def train_validate_model(
     
     for X_batch, Y_batch in data_generator:
         # Send tensors to the device used
-        X_batch, Y_batch = X_batch.to(device), Y_batch.to(device)
-        
-        optimizer.zero_grad()#Clear existing gradients from previous batch
-    
-        #model.train(train)#train(=True) or validate(=False) mode
-                       
-        output, hidden = model(X_batch)
-        
+        X_batch, Y_batch = X_batch.to(device), Y_batch.to(device)        
+        optimizer.zero_grad()#clear existing gradients from previous batch                       
+        output, hidden = model(X_batch)        
         Y_batch = Y_batch.contiguous().view(
             int(batch_size * (len(output)/batch_size)), 
             -1)
@@ -49,7 +98,7 @@ def train_validate_model(
             Y_batch, output = tasks.trim_zeros_from_trials(actual=Y_batch, 
                                                              predicted=output)
         
-        if task_name == 'pic_mem' or task_name == 'bin_mem': 
+        if task_name == 'pic_mem' or task_name == 'nback_mem': 
             Y_batch = Y_batch.view(Y_batch.shape[0],)
             Y_batch = Y_batch.long()
         
@@ -90,7 +139,7 @@ def train_validate_model(
                                               torch.mean(X_batch[idx[0],idx[1],1]))
                 loss_null = criterion(null_prediction, Y_batch)
                 
-            if task_name == 'pic_mem' or task_name == 'bin_mem':   
+            if task_name == 'pic_mem' or task_name == 'nback_mem':   
                    ind = [0,1,2]
                    random.shuffle(ind)
                    output = output[:, ind]#shuffle the positions so we have null predictions
@@ -116,8 +165,68 @@ def test_model(
                task_name = None,
                device = 'cpu',
                save_hidden = False
-               ): 
-       
+               ):
+    '''
+    Test a model
+    
+    Input
+    -----
+    
+    model: instance from the rnn classes in rnnmodels
+    
+    data_generator: object of type torch.utils.data.dataloader.DataLoader
+        for generating the train or validate dataset
+        
+    optimizer: object of torch.optim type
+    
+    criterion: object of torch.nn.modules.loss type
+    
+    train: bool, default True, indicating if the model should be trained(=True)
+        or validated(=False)
+        
+    calc_null: bool, default False, idnciatign if a shuffled null prediction
+        should be calculated
+        
+    batch_size: int, default 32, denotign the size of the batch
+
+    trim: bool, default True, indicatign if the trials should be trimmed and 
+        keep only the memory-related output
+        
+    w: object of torch.Tensor type with shape (N,N) where N is the dimension
+        number of neurons of the hidden recurrent layer
+        
+    metrics: list, default [], of str indicating if additional metrics
+        other than the loss must be estimated
+        
+        Currently accuracy can be specified {'acc'} 
+    
+    task_name: str specifying what type of task is the model trained
+        {'seq_mem', 'pic_mem', 'nback_mem', 'pic_latent_mem'}
+        
+        This is needed to reformat the output for the approapriate loss
+        estimation needed for each task
+    
+    device: str {'cpu', 'gpu'} specifying where the training of the model
+        will take place 
+        
+    save_hidden: bool, default False, indicating if the output of the hidden 
+        layer should be returned  
+        
+    Output
+    ------
+    batch_loss: list of floats indicating the loss for each batch 
+        
+    batch_loss_null: list of floats indicating the loss for each batch 
+        based on the shuffled labels (if calc_null=True else [])
+        
+    batch_metrics: list of floats indicating the metric for each batch 
+        
+    batch_metrics_null: list of floats indicating the metric for each batch 
+        based on the shuffled labels (if calc_null=True else []) 
+    
+    all_hidden: list of objects of torch.Tensor of shape (N,N) with the 
+        activations of the hidden layer with N neurons    
+    '''    
     batch_loss = []
     batch_loss_null = []
     batch_metrics = []
@@ -144,8 +253,7 @@ def test_model(
             Y_batch, output = tasks.trim_zeros_from_trials(actual=Y_batch, 
                                                              predicted=output)
         
-        
-        if task_name == 'pic_mem' or task_name == 'bin_mem': 
+        if task_name == 'pic_mem' or task_name == 'nback_mem': 
             Y_batch = Y_batch.view(Y_batch.shape[0],)
             Y_batch = Y_batch.long()
         
@@ -190,7 +298,76 @@ def train_validate_epochs(
                           folder_save_model = None,
                           iteration = None
                           ):
+    '''
+    Train and validate a model across epochs
+    
+    Input
+    -----
+    model: instance from the rnn classes in rnnmodels
+    
+    training_generator: object of type torch.utils.data.dataloader.DataLoader
+        for generating the train dataset
+        
+    validate_generator: object of type torch.utils.data.dataloader.DataLoader
+        for generating the validation dataset    
+        
+    optimizer: object of torch.optim type
+    
+    criterion: object of torch.nn.modules.loss type
+    
+    train: bool, default True, indicating if the model should be trained(=True)
+        or validated(=False)
+        
+    calc_null: bool, default False, idnciatign if a shuffled null prediction
+        should be calculated
+        
+    batch_size: int, default 32, denotign the size of the batch
 
+    trim: bool, default True, indicatign if the trials should be trimmed and 
+        keep only the memory-related output
+        
+    w: object of torch.Tensor type with shape (N,N) where N is the dimension
+        number of neurons of the hidden recurrent layer
+        
+    metrics: list, default [], of str indicating if additional metrics
+        other than the loss must be estimated
+        
+        Currently accuracy can be specified {'acc'} 
+    
+    task_name: str specifying what type of task is the model trained
+        {'seq_mem', 'pic_mem', 'nback_mem', 'pic_latent_mem'}
+        
+        This is needed to reformat the output for the approapriate loss
+        estimation needed for each task
+    
+    device: str {'cpu', 'gpu'} specifying where the training of the model
+        will take place 
+        
+    store_every_epoch: int, indicating every how many epochs the model under
+        training should be stored
+        
+    folder_save_model: object of type pathlib.PosixPath indicating the folder
+        in which the models will be saved  
+        
+    iteration: int, coding for a combination of params so that the saved 
+        models can belinked to this param combination
+        
+    Output
+    ------
+    loss: list of len 2 with loss[0] a list of floats corresponding to the 
+        train loss and loss[1] the validate loss 
+        
+    loss_null: list of len 2 with loss_null[0] a list of floats corresponding 
+        to the train loss and loss_null[1] the validate loss estimated on 
+        shuffled labels
+        
+    metrics: list of len 2 with metrics[0] a list of floats corresponding to 
+        the train metrics and metrics[1] the validate metrics 
+        
+    metrics_null: list of len 2 with metrics_null[0] a list of floats 
+        corresponding to the train loss and metrics_null[1] the validate loss 
+        estimated on shuffled labels     
+    '''    
     epoch_train_loss=[]
     epoch_train_loss_null=[]
     

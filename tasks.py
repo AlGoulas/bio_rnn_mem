@@ -323,17 +323,63 @@ def generate_pic_latent_wm_trials(
                                   n_back = None,
                                   trial_matching = False,
                                   rescale = True
-                                  ):   
+                                  ): 
+    '''
+    Generate trials of a N-Back working memory task based on 2D images that 
+    are first fed into a CONVNET.
+    
+    The trials consists of consecutive images and the task is to decide
+    if the image presented last matches or not (in terms of category e.g. 
+    number) the image N timesteps ago
+    
+    The trials are padded with zeros and ones with 1 denoting "target image" 
+    cue. Thus, trials are 2D arrays
+    
+    Input
+    -----
+    images: torch.Tensor of shape (N,K) with N the number of images, and K
+        the dimensions of the image in the latent space of the CNVNET
+                
+    trial_length: int, default 5, indicating the lenght of the trial, 
+        specifically the number of images that are used in the memorization 
+        phase of the task. The image corresponding to the latest timestep is 
+        always the target image. For instance if trial_length=5, them the 5th
+        image is the target
+     
+    nr_of_trials: int, default 100, indicating the total number of trials    
+    
+    n_back: int specifying the match N timesteps before the last image. For
+        instance, if n_back=2, then the image that should be compared with the 
+        target image is the 3rd image in the trial
+        
+    trial_matching: bool, default False, specifying if the trials to be 
+        generated should be matching trials(=True) or non-matching trials 
+        (=False) 
+        
+    rescale: bool, default True, specifying if the images should be rescaled
+        to the [0 1] range
+        
+    Output
+    ------
+    all_input_trials: ndarray of shape (N,M) where:
+        N = ((trial_length*2) + 1) * nr_of_trials
+        M = (K+1 (latent space size + 1)
+        
+    all_output_trials: ndarray of shape (N,1) where:
+        N = ((trial_length*2) + 1) * nr_of_trials
+        
+    all_trials_index: ndarray of shape (N,) where:
+        N = ((trial_length*2) + 1) * nr_of_trials    
+    
+    '''
     if ((trial_length-n_back) <=0) and (n_back is not None):
         raise ValueError('N-Back value must be less than the trial length')
            
     all_input_trials = None
     all_output_trials = None
-    
     all_trials_index = None
         
     img_size = images.shape[1]
-    
     #Rescale to [0 1] if rescale True
     if rescale is True:
         images = auxfun.scale_tensor(images, 
@@ -346,7 +392,6 @@ def generate_pic_latent_wm_trials(
 
     # Keep unique labels
     unique_labels = np.unique(labels)    
-    
     for tr in range(nr_of_trials):
         # Create here standard blocks of the trials, namely the cue and "null input"
         # The cue is a 1 on a channel that is not used for the patterns,
