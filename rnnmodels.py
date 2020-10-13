@@ -6,15 +6,42 @@ import auxfun
 
 # RNN with no topology
 class Model(nn.Module):
+    '''
+    Class for constructing an Elman RNN without a structured topology of the 
+    recurrent hidden layer (all-to-all)
+    '''
     def __init__(self, 
                  input_size = None, 
                  output_size = None, 
                  hidden_dim = None, 
-                 n_layers = None,          
+                 n_layers = 1,          
                  init = 'default',
-                 nonlinearity = 'tanh',
+                 nonlinearity = 'relu',
                  device = 'cpu'
                  ):
+        '''
+        Constructor for the RNN model
+        
+        Input
+        -----
+        input_size: int, specifying the number of input neurons
+        
+        output_size: int, specifying the number of output neurons 
+        
+        hidden_dim: int, specifying the number of neurons of the hidden 
+            recurrent layer
+       
+        n_layers: int, default 1, specifying the number of hidden layers
+        
+        init: str {'default','he','xavier'}, default 'default', specifying 
+            what type of weight initialization will be used 
+            
+        nonlinearity: str {'tanh','relu'}, default 'relu', specifying the 
+            activation function
+            
+        device: str {'cpu','gpu'}, default 'cpu', specifying the device to be
+            used
+        '''
         super(Model, self).__init__()
 
         # Defining parameters
@@ -119,6 +146,10 @@ class Model(nn.Module):
 # This will be implemnented with inheritance to avoid replication of common
 # functions with the "normal" Model rnn (forward pass etc).        
 class ModelBio(Model):
+    '''
+    Class for constructing an Elman RNN with a topology of the 
+    recurrent hidden layer (specified by parameter w)
+    '''
     def __init__(self, 
                  input_size = None, 
                  output_size = None, 
@@ -130,6 +161,54 @@ class ModelBio(Model):
                  nonlinearity = 'tanh',
                  device = 'cpu'
                  ):
+        '''
+        Constructor for the RNN model with topology
+        
+        Input
+        -----
+        input_size: int, specifying the number of input neurons
+        
+        output_size: int, specifying the number of output neurons 
+        
+        hidden_dim: int, specifying the number of neurons of the hidden 
+            recurrent layer
+       
+        n_layers: int, default 1, specifying the number of hidden layers
+        
+        w: torch.Tensor of shape (N,N) denoting the topology of the hidden
+            recurrent layer. The topology can be viewed both as binary, i.e.
+            neuron-to-neuron conenctions, and weighted,i.e. how strong two
+            neurons are connected.
+            
+            if w(i,j) == 0 then neurons i, j are NOT connected
+            if w(i,j) != 0 then neurons i, j are connected with a strength 
+            that will be dictated by the magnitude of w(i,j)
+            
+            NOTE: w(i,j) values are used to define the corresponding weight
+            after the initialization corresponding to the parameter init.
+            Thus, w(i,j) as such will not be the weight for the RNN,
+            but a rank ordered equal (if remap_w=True) or a random weight
+            (if remap_w=False)
+        
+        remap_w: bool, default True, specifying if the valeus of w should be 
+            used for rank ordering the weights after the initialization 
+            scheme specified by the parameter init.
+            
+            If True, then rank(w(i,j))==rank(w'(i,j)) where w' the tensor
+            with all the weights of the hidden recurrent layer after the 
+            initialization based on parameter init.
+            
+            If False, no such weight remapping is performed.
+        
+        init: str {'default','he','xavier'}, default 'default', specifying 
+            what type of weight initialization will be used 
+            
+        nonlinearity: str {'tanh','relu'}, default 'relu', specifying the 
+            activation function
+            
+        device: str {'cpu','gpu'}, default 'cpu', specifying the device to be
+            used
+        '''
         nn.Module.__init__(self)
 
         # Defining parameters
@@ -209,17 +288,32 @@ class ModelBio(Model):
         # task. So add a softmax.
         if self.output_size > 1:
             self.softmax = nn.LogSoftmax(dim=1)   
-
-# This class is used to modify the architecture wih the modules specified
-# in the new_modules list. These modules are appended after removing the last
-# layer from the model            
+        
 class ModelBio_Modified(nn.Module):
+    '''
+    This class is used to modify the architecture wih the modules specified
+    in the new_modules list. These modules are appended after removing the last
+    layer (default) from the model.  
+    '''
     def __init__(self, 
-                 model=None, 
-                 n_last_layers=-1,
-                 new_modules=None
+                 model = None, 
+                 n_last_layers = -1,
+                 new_modules = None
                  ):
-
+        '''
+        Input
+        -----
+        model: model that is an instantiation of a class of nn.Module or a 
+            class with such inheritance
+            
+        n_last_layers: int, default -1, specifying which N last layers will 
+            be removed from the model. The default -1 will remove the last 
+            layer, -2 the two last layers, etc    
+        
+        new_modules: list of modules to be added to the model after the 
+            removal of the n_last_layers. Modules of the list must be an object
+            from module torch.nn.modules
+        '''
         super(ModelBio_Modified, self).__init__()
         # assign values from the model to the new one
         self.hidden_dim = model.hidden_dim
@@ -229,7 +323,7 @@ class ModelBio_Modified(nn.Module):
         # Get all the modules of the model in a list 
         module_list = nn.ModuleList(model.children())
         
-        #Remove the n last layers
+        #Remove the n_last_layers
         module_list = module_list[:n_last_layers]
         
         # Append the modules (if specified) 
