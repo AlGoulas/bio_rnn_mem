@@ -98,47 +98,6 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
 C_Neurons = torch.Tensor(C_Neurons).double()
 C_Neurons.to(device)
 
-# Choose task by commenting/uncommenting the dictionary of each one
-# Parameters for the trials
-
-#pic_latent_mem  
-# trial_params={
-#             'task_name': 'pic_latent_mem',
-#             'nr_of_trials': 1000, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'rescale':True,
-#             'train_size': 0.8,  
-#             }
-
-#pic_mem - beta
-# trial_params={
-#             'task_name': 'pic_mem',
-#             'nr_of_trials': 1000, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'rescale':True,
-#             'train_size': 0.8,  
-#             }
-
-#nback_mem
-# trial_params={
-#             'task_name': 'nback_mem',
-#             'nr_of_trials': 500, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'train_size': 0.8,
-#             }
-
-#seq_mem 
-# trial_params = {    
-#                 'task_name': 'seq_mem',       
-#                 'nr_of_trials': 1000,
-#                 'low': 0.,
-#                 'high': 1.,
-#                 'train_size': 0.8,
-#                 }
-
 # Spacify the common model parameters across tasks.
 # Task-specific model parameters will be specified below.
 model_params = {
@@ -146,13 +105,6 @@ model_params = {
                'random_w': random_w, #shuffle topology or not
                'w' : C_Neurons
                }
-
-# Specify the common optimizer params
-# params_for_combos = {
-#                     'lr': [0.0001], 
-#                     'nonlinearity': ['tanh','relu'],
-#                     'optimizer': ['Adam','RMSprop'],
-#                     }
  
 # Parameters for the model and trials automatically assigned based on the 
 # set parameters above
