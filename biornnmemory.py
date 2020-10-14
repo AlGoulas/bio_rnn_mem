@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import argparse
+import json
 import numpy as np
 import os
 from pathlib import Path
@@ -15,14 +17,63 @@ import tasks
 import modeltraineval
 import networkmetrics
 
+
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('true'):
+        return True
+    elif v.lower() in ('false'):
+        return False
+
+# Parse arguments
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--path_to_network', type=str, required=True)#path to where the network data are
+parser.add_argument('--path_to_results', type=str, required=True)#path to where the results will be stored
+parser.add_argument('--net_name', type=str, required=True)#net_name
+parser.add_argument('--freeze_layer', dest='freeze_layer', default=False, 
+                                                           type=str2bool)#freeze_layer
+parser.add_argument('--remap_w', dest='remap_w', default=True, 
+                                                           type=str2bool)#remap_w
+parser.add_argument('--random_w', dest='random_w', default=False, 
+                                                           type=str2bool)#random_w
+parser.add_argument('--rand_partition', dest='rand_partition', default=True, 
+                                                           type=str2bool)#rand_partition
+parser.add_argument('--epochs', type=int, default=500)#epochs
+parser.add_argument('--iterations', type=int, default=5)#iterations
+parser.add_argument('--rnn_size', type=int, required=True)#rnn_size
+parser.add_argument('--nr_neurons', type=int, default=4)#nr of neurons
+parser.add_argument('--pretrained', type=str, default='')#path to pretrained_folder
+parser.add_argument('--init', type=str, default='default')#intitialization of weights
+parser.add_argument('--trial_params', type=json.loads)#dictionary for task params
+parser.add_argument('--combos_params', type=json.loads)#dictionary of parameters used for all possible combos
+
+# Assign the arguments to the variables to be used in the analysis
+for key, value in parser.parse_args()._get_kwargs():
+    if value is not None:
+        if key == 'path_to_network': path_to_connectome_folder = Path(value)
+        if key == 'net_name': data_name = value
+        if key == 'path_to_results': results_folder = Path(value)
+        if key == 'freeze_layer': freeze_layer = value
+        if key == 'remap_w': remap_w = value
+        if key == 'random_w': random_w = value
+        if key == 'rand_partition': rand_partition = value
+        if key == 'epochs': epochs = value
+        if key == 'iterations': iterations = value
+        if key == 'rnn_size': rnn_size = value
+        if key == 'nr_neurons': nr_neurons = value
+        if key == 'pretrained' and len(value) > 0: pretrained_folder = Path(value) 
+        if key == 'pretrained' and len(value) == 0: pretrained_folder = []   
+        if key == 'init': init = value
+        if key == 'trial_params': trial_params = value
+        if key == 'combos_params': params_for_combos = value
+            
+# Add the "trial_matching":True to trial_params 
+trial_params['trial_matching'] = True
 # Decide on the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-  
-# Parameters to set
-
-# Initialization of weights for the RNN
-init = 'default' 
-        
+          
 # Generators parameters
 params_generators = {
                      'batch_size': 128,
@@ -30,24 +81,8 @@ params_generators = {
                      'num_workers': 0
                      }
  
-# Specify here the folder where your connectomes are stored 
-path_to_connectome_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/')
-  
-# Freeze hidden layer
-freeze_layer = False
-
-# Epochs and iterations
-epochs = 500
-iterations = 5
-  
-# Remap RNN weights so that they correlate with the BNN values 
-remap_w = False 
- 
-# Specify here the connectome that you would like to use
-data_name = 'Marmoset_Normalized' 
-
-neuron_density = np.zeros((55,), dtype=int)
-neuron_density[:] = 4 
+neuron_density = np.zeros((rnn_size,), dtype=int)
+neuron_density[:] = nr_neurons 
 
 C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     data_name, 
@@ -63,17 +98,6 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
 C_Neurons = torch.Tensor(C_Neurons).double()
 C_Neurons.to(device)
 
-# Shuffle topology 
-random_w = False
-
-# Folder to keep the results
-results_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test') 
-
-# Folder and specifications for the pretrained model - empty folder if 
-# loading a pretrained model is not desired 
-pretrained_folder = []
-# pretrained_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/development/memory-bio-art/results/seq_mem/macaque_4x/bio')
- 
 # Choose task by commenting/uncommenting the dictionary of each one
 # Parameters for the trials
 
@@ -98,13 +122,13 @@ pretrained_folder = []
 #             }
 
 #nback_mem
-trial_params={
-            'task_name': 'nback_mem',
-            'nr_of_trials': 500, 
-            'trial_length': 5, 
-            'trial_matching': True,
-            'train_size': 0.8,
-            }
+# trial_params={
+#             'task_name': 'nback_mem',
+#             'nr_of_trials': 500, 
+#             'trial_length': 5, 
+#             'trial_matching': True,
+#             'train_size': 0.8,
+#             }
 
 #seq_mem 
 # trial_params = {    
@@ -124,11 +148,11 @@ model_params = {
                }
 
 # Specify the common optimizer params
-params_for_combos = {
-                    'lr': [0.0001], 
-                    'nonlinearity': ['tanh','relu'],
-                    'optimizer': ['Adam','RMSprop'],
-                    }
+# params_for_combos = {
+#                     'lr': [0.0001], 
+#                     'nonlinearity': ['tanh','relu'],
+#                     'optimizer': ['Adam','RMSprop'],
+#                     }
  
 # Parameters for the model and trials automatically assigned based on the 
 # set parameters above
