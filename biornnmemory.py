@@ -117,6 +117,12 @@ with open(file_to_open, 'w') as file:
     for combo_index, combination in enumerate(all_combos):
         file.write(str(combo_index) + ' ' + str(combination) + '\n')
 
+# Calculate accuracy if we have to do with a decision task
+if trial_params['task_name'] == 'nback_mem' or trial_params['task_name'] == 'pic_latent_mem':
+    metrics = ['acc']
+else:
+    metrics = []
+
 # Run the experiment  
         
 # Loop through all the combos and train and validate the model with the given
@@ -308,7 +314,7 @@ for combo_index, combination in enumerate(all_combos):
                                                 w = w,
                                                 task_name = trial_params['task_name'],
                                                 device = device,
-                                                metrics = [],
+                                                metrics = metrics,
                                                 store_every_epoch = 10,
                                                 folder_save_model = results_folder / str(combo_index),
                                                 iteration = it
