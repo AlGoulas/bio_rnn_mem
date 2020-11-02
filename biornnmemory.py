@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import configparser
 import numpy as np
 import os
 from pathlib import Path
@@ -15,14 +16,35 @@ import tasks
 import modeltraineval
 import networkmetrics
 
+# Read config file
+config = configparser.ConfigParser()
+config.read('config.txt')
+
+path_to_connectome_folder = Path(config['paths']['path_to_network'])
+results_folder = Path(config['paths']['path_to_results'])
+data_name = config['net']['net_name']
+freeze_layer = config['trainvalidate'].getboolean('freeze_layer')
+remap_w = config['trainvalidate'].getboolean('remap_w')
+random_w = config['net'].getboolean('random_w')
+rand_partition = config['net'].getboolean('rand_partition')
+epochs = int(config['trainvalidate']['epochs']) 
+iterations = int(config['trainvalidate']['iterations']) 
+rnn_size =  int(config['net']['rnn_size'])  
+nr_neurons = int(config['net']['nr_neurons'])  
+pretrained_folder = config['paths']['pretrained']
+if len(pretrained_folder)==0: 
+    pretrained_folder = [] 
+else: 
+    pretrained_folder = Path(pretrained_folder)  
+init = config['trainvalidate']['init'] 
+trial_params = eval(config['trialparams']['trial_params'])
+params_for_combos = eval(config['combosparams']['combos_params'])
+            
+# Add the "trial_matching":True to trial_params 
+trial_params['trial_matching'] = True
 # Decide on the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-  
-# Parameters to set
-
-# Initialization of weights for the RNN
-init = 'default' 
-        
+          
 # Generators parameters
 params_generators = {
                      'batch_size': 128,
@@ -30,24 +52,8 @@ params_generators = {
                      'num_workers': 0
                      }
  
-# Specify here the folder where your connectomes are stored 
-path_to_connectome_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/')
-  
-# Freeze hidden layer
-freeze_layer = False
-
-# Epochs and iterations
-epochs = 500
-iterations = 5
-  
-# Remap RNN weights so that they correlate with the BNN values 
-remap_w = False 
- 
-# Specify here the connectome that you would like to use
-data_name = 'Marmoset_Normalized' 
-
-neuron_density = np.zeros((55,), dtype=int)
-neuron_density[:] = 4 
+neuron_density = np.zeros((rnn_size,), dtype=int)
+neuron_density[:] = nr_neurons 
 
 C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     data_name, 
@@ -63,58 +69,6 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
 C_Neurons = torch.Tensor(C_Neurons).double()
 C_Neurons.to(device)
 
-# Shuffle topology 
-random_w = False
-
-# Folder to keep the results
-results_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test') 
-
-# Folder and specifications for the pretrained model - empty folder if 
-# loading a pretrained model is not desired 
-pretrained_folder = []
-# pretrained_folder = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/development/memory-bio-art/results/seq_mem/macaque_4x/bio')
- 
-# Choose task by commenting/uncommenting the dictionary of each one
-# Parameters for the trials
-
-#pic_latent_mem  
-# trial_params={
-#             'task_name': 'pic_latent_mem',
-#             'nr_of_trials': 1000, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'rescale':True,
-#             'train_size': 0.8,  
-#             }
-
-#pic_mem - beta
-# trial_params={
-#             'task_name': 'pic_mem',
-#             'nr_of_trials': 1000, 
-#             'trial_length': 5, 
-#             'trial_matching': True,
-#             'rescale':True,
-#             'train_size': 0.8,  
-#             }
-
-#nback_mem
-trial_params={
-            'task_name': 'nback_mem',
-            'nr_of_trials': 500, 
-            'trial_length': 5, 
-            'trial_matching': True,
-            'train_size': 0.8,
-            }
-
-#seq_mem 
-# trial_params = {    
-#                 'task_name': 'seq_mem',       
-#                 'nr_of_trials': 1000,
-#                 'low': 0.,
-#                 'high': 1.,
-#                 'train_size': 0.8,
-#                 }
-
 # Spacify the common model parameters across tasks.
 # Task-specific model parameters will be specified below.
 model_params = {
@@ -122,13 +76,6 @@ model_params = {
                'random_w': random_w, #shuffle topology or not
                'w' : C_Neurons
                }
-
-# Specify the common optimizer params
-params_for_combos = {
-                    'lr': [0.0001], 
-                    'nonlinearity': ['tanh','relu'],
-                    'optimizer': ['Adam','RMSprop'],
-                    }
  
 # Parameters for the model and trials automatically assigned based on the 
 # set parameters above
@@ -137,34 +84,21 @@ if trial_params['task_name'] == 'pic_latent_mem':
     model_params['input_size'] = 51
     model_params['output_size'] = 3 
       
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4] 
-
 if trial_params['task_name'] == 'pic_mem':  
     # Update model params based on task
     model_params['input_size'] = 785
     model_params['output_size'] = 3 
-      
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4]  
-    
+          
 if trial_params['task_name'] == 'nback_mem':  
     # Update model params based on task
     model_params['input_size'] = 2
     model_params['output_size'] = 3 
-      
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4]    
-    
+          
 if trial_params['task_name'] == 'seq_mem':  
     # Update model params based on task
     model_params['input_size'] = 2
     model_params['output_size'] = 1
        
-    # Parameters out of which all combination will be generated enriched with 
-    # the task-specific params
-    params_for_combos['pattern_length'] = [3, 5, 10]
-
 # Parameters for training that do not change (maybe place them in tuple in
 # future updates) 
 train_params_immutable = {
@@ -217,25 +151,22 @@ for combo_index, combination in enumerate(all_combos):
         or trial_params['task_name'] == 'nback_mem' 
         or trial_params['task_name'] == 'pic_latent_mem'): 
         trial_params['n_back'] = combination[all_keys.index('n_back')]
-          
+      
+    print('\nPerforming task...:',trial_params['task_name'])    
     print('\nTraining for combo nr...:', combo_index+1, '/', len(all_combos), 'combination...:', combination)
-    
     # Train and test iter times
     for it in range(train_params_immutable.get('iterations')):   
             # Generate trials
             X, Y, trials_idx = tasks.create_trials(trial_params)
-            
             #Set dataloaders
             training_set = tasks.Dataset(X[0], Y[0], trials_idx[0])
             training_generator = data.DataLoader(training_set, **params_generators)
             validate_set = tasks.Dataset(X[1], Y[1], trials_idx[1])
             validate_generator = data.DataLoader(validate_set, **params_generators)
-            
              # Based on the nonlinearity, specify initialization of weights
             if init != 'default':
                 if nonlinearity == 'relu': init = 'he'
                 if nonlinearity == 'tanh': init = 'xavier'
-            
             if model_params.get('random_w') is False:
                 w = model_params.get('w')
                 w = w.to(device)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import argparse
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -10,6 +11,25 @@ import seaborn as sns
 import auxfun
 import visfun
 
+# Parse arguments
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--results_folders', nargs='+', required=True)
+parser.add_argument('--results_labels', nargs='+', required=True)   
+parser.add_argument('--save_figs', type=str, required=True)#path to where the figs will be stored
+parser.add_argument('--ylabel', type=str, default='ylabel')#ylabel
+
+# Assign the arguments to the variables to be used in the analysis
+all_results_folders = []
+for key, value in parser.parse_args()._get_kwargs():
+    if value is not None:
+        if key == 'results_folders':
+            for v in value:
+                all_results_folders.append(Path(v))
+        if key == 'results_labels': results_labels = value
+        if key == 'save_figs': path_save = Path(value) 
+        if key == 'ylabel': ylabel  = value
+                          
 # Make labels in svg editable
 new_plt_params = {
                   'text.usetex': False,
@@ -17,41 +37,6 @@ new_plt_params = {
                  }
 
 plt.rcParams.update(new_plt_params)      
-# Load, process and visualize results 
-    
-# Folders with the results
-#results_folder_bio_w_p = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/development/memory-bio-art/results/bin_mem/topology_and_weight_map_partitioned/marmoset_4x/bio')  
-#results_folder_rand_w_p = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/development/memory-bio-art/results/bin_mem/topology_and_weight_map_partitioned/marmoset_4x/rand')        
-
-results_folder_bio_no = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/no_w_map/bio') 
-results_folder_rand_no = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/no_w_map/rand')        
-results_folder_bio_eq = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/w_map_eq/bio') 
-results_folder_rand_eq = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/w_map_eq/rand')        
-results_folder_bio_div = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/w_map_div/bio') 
-results_folder_rand_div = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/nback_mem/marmoset_4x/w_map_div/rand')  
-
-all_results_folders = [
-                       results_folder_bio_no,
-                       results_folder_rand_no,
-                       results_folder_bio_eq,
-                       results_folder_rand_eq,
-                       results_folder_bio_div,
-                       results_folder_rand_div
-                      ]
-
-# Give labels to the results folders to keep track of the results origin
-results_labels = [
-                  'b_w_no', 
-                  'r_w_no',
-                  'b_w_eq', 
-                  'r_w_eq',
-                  'b_w_div', 
-                  'r_w_div'
-                 ]
-
-# Specify folder to store figs
-
-path_save = Path('/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/figs/nback_mem/marmoset_4x/all')
 
 # List to keep all the results for all_results_folders
 all_current_results_quantities = []
@@ -148,7 +133,7 @@ for folder_count in range(len(folder_indexes)):
                                     ep = ep, 
                                     title = all_combinations_str[folder_count],
                                     xlabel = 'epochs',
-                                    ylabel = 'loss (NLL)',
+                                    ylabel = ylabel,
                                     path_save = path_save,
                                     file_prefix = '_loss',
                                     palette = sns.color_palette('mako_r', 

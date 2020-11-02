@@ -98,7 +98,7 @@ def train_validate_model(
             Y_batch, output = tasks.trim_zeros_from_trials(actual=Y_batch, 
                                                              predicted=output)
         
-        if task_name == 'pic_mem' or task_name == 'nback_mem': 
+        if task_name == 'pic_mem' or task_name == 'nback_mem' or task_name == 'pic_latent_mem': 
             Y_batch = Y_batch.view(Y_batch.shape[0],)
             Y_batch = Y_batch.long()
         
@@ -383,7 +383,7 @@ def train_validate_epochs(
     # TODO N-fold validation can be implemented for each epoch. In addition
     # a random shuffling can be implemented internally as an option so that 
     # the model is not trained/validated in the same order across all epochs. 
-    for epoch in range(0, epochs):
+    for epoch in range(epochs):
         optimizer.zero_grad() #Clear existing gradients from previous epoch        
         # Train
         (batch_loss,
@@ -458,7 +458,7 @@ def train_validate_epochs(
             epoch_validate_metrics_null.append(statistics.mean(batch_metrics_null))    
            
         # Communicate where we stand
-        if calc_null is False and batch_metrics:    
+        if calc_null is False and batch_metrics:
             print('Epoch',epoch+1,'/', epochs,
                   ' Train loss: ', epoch_train_loss[-1], 
                   ' Val loss: ', epoch_validate_loss[-1],
@@ -466,7 +466,7 @@ def train_validate_epochs(
                   ' Val acc: ', epoch_validate_metrics[-1]
                   )
                   
-        if calc_null is True and batch_metrics:    
+        if calc_null is True and batch_metrics:
             print('Epoch',epoch+1,'/', epochs,
                   ' Train loss: ', epoch_train_loss[-1], 
                   ' Train loss null: ', epoch_train_loss_null[-1],
@@ -478,12 +478,12 @@ def train_validate_epochs(
                   ' Val acc null: ', epoch_validate_metrics_null[-1],
                   )
             
-        if calc_null is False and not batch_metrics:    
-            print('Epoch',epoch+1,'/', epochs,
-                  ' Train loss: ', epoch_train_loss[-1],
-                  ' Validate loss: ', epoch_validate_loss[-1]
-                  )  
-                              
+        if calc_null is False and not batch_metrics:
+               print('Epoch',epoch+1,'/', epochs,
+                  ' Train loss: ', epoch_train_loss[-1], 
+                  ' Val loss: ', epoch_validate_loss[-1],
+                  )
+                    
     # Assign the outcome of the training, validation of the model
     # to lists        
     loss = [epoch_train_loss, epoch_validate_loss]

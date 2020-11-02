@@ -590,28 +590,11 @@ def generate_nback_wm_trials(
         target_value = np.random.uniform(0., 1., 1)
         
         if trial_matching is True:
-            #trial_idxs[len(trial_idxs)-1] = 1
-            #trial_idxs[(len(trial_idxs)-1) - n_back] = 1
             trial[0, trial_length-1] = target_value[0]
             trial[0, (trial_length-n_back-1)] = target_value[0]
         else:
-            #trial_idxs[len(trial_idxs)-1] = 1
-            #trial_idxs[(len(trial_idxs)-1) - n_back] = 1
             trial[0, trial_length-1] =  target_value[0]
             
-            # Put the wrong value in n_back position since the trial is False
-            # if target_value[0] == 0:
-            #     trial[0, len(trial_idxs) - n_back] = 1
-            # else:
-            #     trial[0, len(trial_idxs) - n_back] = 0
-    
-        #rand_trials_idxs = np.where(trial_idxs == 0)[0]
-        #random_values = [random.randint(0, 1) for x in range(0, len(rand_trials_idxs))] 
-        #random_values = np.random.uniform(0., 1., len(rand_trials_idxs))
-    
-        # for i in range (0, len(rand_trials_idxs)):
-        #    trial[:,rand_trials_idxs[i]] = random_values[i]
-    
         # Add the padding that corresponds to a cue=0 
         #(that means no replaying yet, but learning the input patterns)
         trial = np.vstack((padding_for_trial, trial))
@@ -629,7 +612,6 @@ def generate_nback_wm_trials(
         output_trial = np.zeros((1, trial_length+1))#Add 1 column to have the same length with input
         
         #Assign the correct labeling
-        
         if trial_matching is True:
             output_trial[0, trial_length] = 2
         else:
@@ -808,18 +790,13 @@ def create_trials(trial_params):
     '''
     if trial_params['task_name'] == 'seq_mem':
         pattern_length = trial_params['pattern_length']
-        low = trial_params['low']
-        high = trial_params['high']
         nr_of_trials = trial_params['nr_of_trials']
-        
         train_size = trial_params['train_size']
         
         # Train and validation test
         (X, 
          Y,
          indexes) = generate_sequence_patterns(pattern_length = pattern_length, 
-                                               low = low, 
-                                               high = high, 
                                                nr_of_trials = nr_of_trials
                                                ) 
                                                
@@ -869,7 +846,7 @@ def create_trials(trial_params):
                                                        nr_of_trials = nr_of_trials, 
                                                        n_back = n_back,
                                                        trial_matching = trial_matching,
-                                                       rescale = True
+                                                       rescale = rescale
                                                        )    
         
     if trial_params['task_name'] == 'nback_mem': 
