@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import argparse
-import json
+import configparser
 import numpy as np
 import os
 from pathlib import Path
@@ -17,57 +16,29 @@ import tasks
 import modeltraineval
 import networkmetrics
 
+# Read config file
+config = configparser.ConfigParser()
+config.read('config.txt')
 
-def str2bool(v):
-    if isinstance(v, bool):
-       return v
-    if v.lower() in ('true'):
-        return True
-    elif v.lower() in ('false'):
-        return False
-
-# Parse arguments
-parser = argparse.ArgumentParser()
-
-parser.add_argument('--path_to_network', type=str, required=True)#path to where the network data are
-parser.add_argument('--path_to_results', type=str, required=True)#path to where the results will be stored
-parser.add_argument('--net_name', type=str, required=True)#net_name
-parser.add_argument('--freeze_layer', dest='freeze_layer', default=False, 
-                                                           type=str2bool)#freeze_layer
-parser.add_argument('--remap_w', dest='remap_w', default=True, 
-                                                           type=str2bool)#remap_w
-parser.add_argument('--random_w', dest='random_w', default=False, 
-                                                           type=str2bool)#random_w
-parser.add_argument('--rand_partition', dest='rand_partition', default=True, 
-                                                           type=str2bool)#rand_partition
-parser.add_argument('--epochs', type=int, default=500)#epochs
-parser.add_argument('--iterations', type=int, default=5)#iterations
-parser.add_argument('--rnn_size', type=int, required=True)#rnn_size
-parser.add_argument('--nr_neurons', type=int, default=4)#nr of neurons
-parser.add_argument('--pretrained', type=str, default='')#path to pretrained_folder
-parser.add_argument('--init', type=str, default='default')#intitialization of weights
-parser.add_argument('--trial_params', type=json.loads)#dictionary for task params 
-parser.add_argument('--combos_params', type=json.loads)#dictionary of parameters used for all possible combos
-
-# Assign the arguments to the variables to be used in the analysis
-for key, value in parser.parse_args()._get_kwargs():
-    if value is not None:
-        if key == 'path_to_network': path_to_connectome_folder = Path(value)
-        if key == 'net_name': data_name = value
-        if key == 'path_to_results': results_folder = Path(value)
-        if key == 'freeze_layer': freeze_layer = value
-        if key == 'remap_w': remap_w = value
-        if key == 'random_w': random_w = value
-        if key == 'rand_partition': rand_partition = value
-        if key == 'epochs': epochs = value
-        if key == 'iterations': iterations = value
-        if key == 'rnn_size': rnn_size = value
-        if key == 'nr_neurons': nr_neurons = value
-        if key == 'pretrained' and len(value) > 0: pretrained_folder = Path(value) 
-        if key == 'pretrained' and len(value) == 0: pretrained_folder = []   
-        if key == 'init': init = value
-        if key == 'trial_params': trial_params = value
-        if key == 'combos_params': params_for_combos = value
+path_to_connectome_folder = Path(config['paths']['path_to_network'])
+results_folder = Path(config['paths']['path_to_results'])
+data_name = config['net']['net_name']
+freeze_layer = config['trainvalidate'].getboolean('freeze_layer')
+remap_w = config['trainvalidate'].getboolean('remap_w')
+random_w = config['net'].getboolean('random_w')
+rand_partition = config['net'].getboolean('rand_partition')
+epochs = int(config['trainvalidate']['epochs']) 
+iterations = int(config['trainvalidate']['iterations']) 
+rnn_size =  int(config['net']['rnn_size'])  
+nr_neurons = int(config['net']['nr_neurons'])  
+pretrained_folder = config['paths']['pretrained']
+if len(pretrained_folder)==0: 
+    pretrained_folder = [] 
+else: 
+    pretrained_folder = Path(pretrained_folder)  
+init = config['trainvalidate']['init'] 
+trial_params = eval(config['trialparams']['trial_params'])
+params_for_combos = eval(config['combosparams']['combos_params'])
             
 # Add the "trial_matching":True to trial_params 
 trial_params['trial_matching'] = True
