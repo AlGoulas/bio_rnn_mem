@@ -1,0 +1,13 @@
+seq_mem
+
+!python3 biornnmemory.py --path_to_network '/Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/' --path_to_results '/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test' --net_name 'Marmoset_Normalized' --rnn_size 55 --trial_params '{"task_name":"seq_mem", "nr_of_trials":500, "train_size":0.8}' --combos_params '{"lr":[0.0001,0.000001], "nonlinearity":["relu","tanh"], "optimizer":["Adam","RMSprop"], "pattern_length": [3, 5, 10]}'
+
+pic_latent_mem
+
+!python3 biornnmemory.py --path_to_network '/Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/' --path_to_results '/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test' --net_name 'Marmoset_Normalized' --rnn_size 55 --trial_params '{"task_name":"pic_latent_mem", "nr_of_trials":500, "trial_length":5, "rescale":"True", "train_size":0.8}' --combos_params '{"lr":[0.0001,0.000001], "nonlinearity":["relu","tanh"], "optimizer":["Adam","RMSprop"], "n_back":[2,3,4]}' --epochs 3000
+
+nback_mem
+
+!python3 biornnmemory.py --path_to_network '/Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/' --path_to_results '/Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test' --net_name 'Marmoset_Normalized' --rnn_size 55 --trial_params '{"task_name":"nback_mem", "nr_of_trials":500, "trial_length":5, "train_size":0.8}' --combos_params '{"lr":[0.0001,0.000001], "nonlinearity":["relu","tanh"], "optimizer":["Adam","RMSprop"], "n_back":[2,3,4]}' --epochs 3000
+
+

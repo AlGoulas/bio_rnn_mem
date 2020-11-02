@@ -46,7 +46,7 @@ parser.add_argument('--rnn_size', type=int, required=True)#rnn_size
 parser.add_argument('--nr_neurons', type=int, default=4)#nr of neurons
 parser.add_argument('--pretrained', type=str, default='')#path to pretrained_folder
 parser.add_argument('--init', type=str, default='default')#intitialization of weights
-parser.add_argument('--trial_params', type=json.loads)#dictionary for task params
+parser.add_argument('--trial_params', type=json.loads)#dictionary for task params 
 parser.add_argument('--combos_params', type=json.loads)#dictionary of parameters used for all possible combos
 
 # Assign the arguments to the variables to be used in the analysis
@@ -113,34 +113,21 @@ if trial_params['task_name'] == 'pic_latent_mem':
     model_params['input_size'] = 51
     model_params['output_size'] = 3 
       
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4] 
-
 if trial_params['task_name'] == 'pic_mem':  
     # Update model params based on task
     model_params['input_size'] = 785
     model_params['output_size'] = 3 
-      
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4]  
-    
+          
 if trial_params['task_name'] == 'nback_mem':  
     # Update model params based on task
     model_params['input_size'] = 2
     model_params['output_size'] = 3 
-      
-    # Parameters out of which all combination will be generated
-    params_for_combos['n_back'] = [2, 3, 4]    
-    
+          
 if trial_params['task_name'] == 'seq_mem':  
     # Update model params based on task
     model_params['input_size'] = 2
     model_params['output_size'] = 1
        
-    # Parameters out of which all combination will be generated enriched with 
-    # the task-specific params
-    params_for_combos['pattern_length'] = [3, 5, 10]
-
 # Parameters for training that do not change (maybe place them in tuple in
 # future updates) 
 train_params_immutable = {
@@ -193,25 +180,22 @@ for combo_index, combination in enumerate(all_combos):
         or trial_params['task_name'] == 'nback_mem' 
         or trial_params['task_name'] == 'pic_latent_mem'): 
         trial_params['n_back'] = combination[all_keys.index('n_back')]
-          
+      
+    print('\nPerforming task...:',trial_params['task_name'])    
     print('\nTraining for combo nr...:', combo_index+1, '/', len(all_combos), 'combination...:', combination)
-    
     # Train and test iter times
     for it in range(train_params_immutable.get('iterations')):   
             # Generate trials
             X, Y, trials_idx = tasks.create_trials(trial_params)
-            
             #Set dataloaders
             training_set = tasks.Dataset(X[0], Y[0], trials_idx[0])
             training_generator = data.DataLoader(training_set, **params_generators)
             validate_set = tasks.Dataset(X[1], Y[1], trials_idx[1])
             validate_generator = data.DataLoader(validate_set, **params_generators)
-            
              # Based on the nonlinearity, specify initialization of weights
             if init != 'default':
                 if nonlinearity == 'relu': init = 'he'
                 if nonlinearity == 'tanh': init = 'xavier'
-            
             if model_params.get('random_w') is False:
                 w = model_params.get('w')
                 w = w.to(device)
