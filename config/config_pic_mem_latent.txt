@@ -1,0 +1,24 @@
+[paths]
+path_to_network = /Users/alexandrosgoulas/Data/work-stuff/python-code/packages/Bio2Art/connectomes/
+path_to_results = /Users/alexandrosgoulas/Data/work-stuff/python-code/projects/rnn-bio2art-sequence-mem/test
+pretrained = 
+
+[net]
+net_name = Marmoset_Normalized
+rnn_size = 55
+nr_neurons = 4
+rand_partition = True
+random_w = False
+
+[trainvalidate]
+epochs = 500
+iterations = 5
+init = default
+freeze_layer = False
+remap_w = True
+
+[trialparams]
+trial_params = {"task_name":"pic_mem_latent", "nr_of_trials":500, "trial_length":5, "train_size":0.8, "rescale":True}
+
+[combosparams]
+combos_params = {"lr":[0.0001,0.000001], "nonlinearity":["relu","tanh"], "optimizer":["Adam","RMSprop"], "n_back":[2,3,4]}
