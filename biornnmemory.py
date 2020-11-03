@@ -62,7 +62,7 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     target_sparsity = 0.8,
     intrinsic_conn = True, 
     target_sparsity_intrinsic = 1.,
-    rand_partition = True,
+    rand_partition = rand_partition,
     keep_diag = False
     )
 
