@@ -18,7 +18,7 @@ import networkmetrics
 
 # Read config file
 config = configparser.ConfigParser()
-config.read('config.txt')
+config.read('config.ini')
 
 path_to_connectome_folder = Path(config['paths']['path_to_network'])
 results_folder = Path(config['paths']['path_to_results'])
@@ -39,7 +39,12 @@ else:
 init = config['trainvalidate']['init'] 
 trial_params = eval(config['trialparams']['trial_params'])
 params_for_combos = eval(config['combosparams']['combos_params'])
-            
+# Pretrained parameters - which epoch and which iteration should be used to 
+# load a pretrained model (specified by pretrained_folder)
+# NOT used in the report of this project but added for completeness
+pretrained_epoch = int(config['pretrainedparams']['pretrained_epoch']) 
+pretrained_iteration = int(config['pretrainedparams']['pretrained_iteration'])    
+           
 # Add the "trial_matching":True to trial_params 
 trial_params['trial_matching'] = True
 # Decide on the device
@@ -247,8 +252,8 @@ for combo_index, combination in enumerate(all_combos):
                 model = auxfun.load_pretrained(
                                                 model,
                                                 pretrained_folder = pretrained_folder, 
-                                                epoch = 499,
-                                                it = 0,
+                                                epoch = pretrained_epoch,
+                                                it = pretrained_iteration,
                                                 combo_nr = combo_index
                                                 )
                 

@@ -3,7 +3,6 @@
 import numpy as np
 import random
 
-from keras.datasets import mnist
 from sklearn.model_selection import GroupShuffleSplit
 import torch
 from torch.utils import data
@@ -802,6 +801,7 @@ def create_trials(trial_params):
                                                
     if trial_params['task_name'] == 'pic_mem':  
         # Load the data
+        from keras.datasets import mnist#Load mnist from keras 
         # Use only the test set - it has 
         # less but sufficient samples than the train
         _ , (x_test, y_test) = mnist.load_data() 
