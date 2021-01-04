@@ -4,7 +4,7 @@ Create and train bio-instantiated recurrent neural networks that perform working
 
 ![bio_rnn_mem](bio_rnn_mem.png) 
 
-#Description
+# Description
 While the interest in the relation between artifical and biological neural networks has generated a plethora of studies, attention is promarily directed towards the neurobiological plausibility of learnign rules and the similarity of visual representation in artificial and natural systems. The similarity and differences of the ***network topology*** of artificial and natural systems is examined only through the lens of abstract analogies, without a direct incorporation of the network topology found in biological neural system, such as the primate brain, in artifical neural networks.
 
 This project instantiates the topology of biological neural networks (monkey and human brain networks) in recurrent neural networks with different strategies. The bio-instantiated artifical networks are tested in working memory tasks, that is, tasks that require tracking of information across time.
@@ -15,11 +15,11 @@ The contributions of the project are as follows:
 * Demonstrating the effects of biological network topology in the performance of the artifical networks (minimization of loss, speed of training)
 * Using network topology data from different species, thus examining the effects of biological network topology from a universal, cross-species standpoint 
 
-#Usage
-##Installation
+# Usage
+## Installation
 Clone the repository and create a virtual environment (e.g., with conda) with the requirements.txt
 
-##Running the experiements
+## Running the experiements
 All experiments can be run by executing ***biornnmemory.py***. The parameters needed are specified in the ***config.ini***
 
 For each task, there is a template config.ini file in the ***config*** folder.
@@ -61,7 +61,7 @@ pretrained_iteration = 0
  
 Let's see what each one of them does.
 
-##Config.ini parameters
+## Config.ini parameters
 ```
 [paths]
 path_to_network = /Users/alexandrosgoulas/Bio2Art/connectomes/
