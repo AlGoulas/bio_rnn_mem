@@ -30,7 +30,7 @@ There are several parameters that exist in the config.ini file, which looks like
 
 ```
 [paths]
-path_to_network = /Users/alexandrosgoulas/Bio2Art/connectomes/
+path_to_network = /Users/alexandrosgoulas/bio2art/connectomes/
 path_to_results = /Users/alexandrosgoulas/rnn-bio2art-sequence-mem/test
 pretrained = 
 
@@ -67,13 +67,13 @@ The content above pertains to the sequential memory task, but the majority of th
 
 ```
 [paths]
-path_to_network = /Users/alexandrosgoulas/Bio2Art/connectomes/
+path_to_network = /Users/alexandrosgoulas/bio2art/connectomes/
 path_to_results = /Users/alexandrosgoulas/rnn-bio2art-sequence-mem/test
 pretrained = 
 ```
 Here the path for saving the results ```path_to_results ``` and with the location of the empirical biological networks (connectomes) ```path_to_network ``` are specified. 
 
-Biological neural networks are available in the [bio2art](https://github.com/AlGoulas/Bio2Art) package.
+Biological neural networks are available in the [bio2art](https://github.com/AlGoulas/bio2art) package.
 
 Note that the ```pretrained ``` parameter is used for loading pretrained models. This option is not used in the current project, but is available for further experimentation.
 
@@ -87,7 +87,7 @@ nr_neurons = 4
 rand_partition = True
 random_w = False
 ```
-These parameters pertain to the [bio2art](https://github.com/AlGoulas/Bio2Art) package that converts empirical data from biological neural networks to a format that can be incorporated in artificial recurrent neural networks. All the parameters are  [explained in detail](https://github.com/AlGoulas/Bio2Art) in the documentation of aforemention package.
+These parameters pertain to the [bio2art](https://github.com/AlGoulas/bio2art) package that converts empirical data from biological neural networks to a format that can be incorporated in artificial recurrent neural networks. All the parameters are  [explained in detail](https://github.com/AlGoulas/bio2art) in the documentation of aforemention package.
 
 The ```random_w``` parameter dictates if the models will be trained with the weights adhering to the network topology of the selected biological neural network ```random_w = False``` or a randomized version thereof ```random_w = True```  
 
