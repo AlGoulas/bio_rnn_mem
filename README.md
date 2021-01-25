@@ -174,5 +174,21 @@ We can visualize the results of the experiments (loss function across epochs for
 where ```--results_labels bio rand``` specifies the labels that will be used for the visualization of the results from the experiments, ```--save_figs /Users/alexandrosgoulas/Data/rnn_bio/figs``` is the folder where the figures wil be saved and ```--ylabel loss``` specifies the label that will be placed in the yaxis in the plots visualizg the results (here: "loss").
 
 Note that an arbitrary set of results folders and results labels can be specified, provided that if N results folders are specified, then results labels should also be specified.  
+
+# Citation
+```
+@article {Goulas2021.01.22.427744,
+	author = {Goulas, Alexandros and Damicelli, Fabrizio and Hilgetag, Claus C},
+	title = {Bio-instantiated recurrent neural networks},
+	elocation-id = {2021.01.22.427744},
+	year = {2021},
+	doi = {10.1101/2021.01.22.427744},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2021/01/23/2021.01.22.427744},
+	eprint = {https://www.biorxiv.org/content/early/2021/01/23/2021.01.22.427744.full.pdf},
+	journal = {bioRxiv}
+}
+```
+
  
  
