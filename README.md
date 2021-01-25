@@ -177,7 +177,7 @@ Note that an arbitrary set of results folders and results labels can be specifie
 
 # Citation
 ```
-@article {Goulas2021.01.22.427744,
+@article {Goulas2021,
 	author = {Goulas, Alexandros and Damicelli, Fabrizio and Hilgetag, Claus C},
 	title = {Bio-instantiated recurrent neural networks},
 	elocation-id = {2021.01.22.427744},
