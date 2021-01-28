@@ -308,7 +308,7 @@ def generate_pic_wm_trials(
           
     return all_input_trials, all_output_trials, all_trials_index  
 
-def generate_pic_latent_wm_trials(
+def generate_pic_latent_wm_trials( 
                                   images = None,
                                   labels = None,
                                   trial_length = 5, 
@@ -376,7 +376,7 @@ def generate_pic_latent_wm_trials(
     #Rescale to [0 1] if rescale True
     if rescale is True:
         images = auxfun.scale_tensor(images, 
-                                     global_scaling=False
+                                     global_scaling = False
                                      )# rescale each trial seperately (row-wise rescaling)
     
     # Convert to numpy
@@ -393,19 +393,19 @@ def generate_pic_latent_wm_trials(
         # when the reservoir has to replay the patterns. 
         
         # 1 is presented only once, with zeros following it for the "null input" 
-        null_input = np.zeros((img_size+1, 2))
+        null_input = np.zeros((img_size+1, 2), dtype = 'float32')
         
         # Assign the cue at the upper left corner so that the first column of the 
         # null input is actually the recall cue.
         null_input[0,0] = 1
         
-        padding_for_trial = np.zeros((trial_length,))
+        padding_for_trial = np.zeros((trial_length,), dtype = 'float32')
         
         # Generate one trial based on the specifications
         # The last pic in the trial must be also the pic n_back steps
         # Select the targets and the non-targets based on the labels
         target_pic_label = random.randrange(unique_labels.shape[0])
-        trial = np.zeros((img_size, trial_length))
+        trial = np.zeros((img_size, trial_length), dtype = 'float32')
         
         potential_target_pic_idxs = np.where(target_pic_label == labels)[0]
         potential_non_target_pic_idxs = np.where(target_pic_label != labels)[0]
@@ -423,7 +423,7 @@ def generate_pic_latent_wm_trials(
         #target pic in the correct indexes indicated by len(trial_idxs) and
         #n_back. Take into account if the trials are 
         #trial_matching = True or False
-        trial_idxs = np.zeros((trial_length,))
+        trial_idxs = np.zeros((trial_length,), dtype = 'float32')
         
         if trial_matching is True:
             trial_idxs[len(trial_idxs)-1] = 1
@@ -452,7 +452,6 @@ def generate_pic_latent_wm_trials(
         # Add the padding that corresponds to a cue=0 
         #(that means no replaying yet, but learning the input patterns)
         trial = np.vstack((padding_for_trial, trial))
-        
         input_trial = np.hstack((trial, null_input))
         
         # Now we can construct the desired ouput. 
@@ -463,10 +462,9 @@ def generate_pic_latent_wm_trials(
         # 2:n_back matches=True
         # Hence, the output trials correspond to the correct labels of 
         # a 3-class classification problem
-        output_trial = np.zeros((1, trial_length+2))#Add 1 column to have the same length with input
+        output_trial = np.zeros((1, trial_length+2), dtype = 'float32')#Add 1 column to have the same length with input
         
         #Assign the correct labeling
-        
         if trial_matching is True:
             output_trial[0, (trial_length+1):] = 2
         else:
@@ -482,7 +480,7 @@ def generate_pic_latent_wm_trials(
             all_output_trials = np.hstack((all_output_trials, output_trial))
             
         # Construct the indexes to keep track of the trials
-        current_index = np.zeros(input_trial.shape[1],)
+        current_index = np.zeros(input_trial.shape[1], dtype = 'float32')
         current_index[:] = tr
               
         if all_trials_index is None:           
@@ -556,13 +554,13 @@ def generate_nback_wm_trials(
         # when the reservoir has to replay the patterns. 
         
         # 1 is presented only once, with zeros following it for the "null input" 
-        null_input = np.zeros((2, 1))
+        null_input = np.zeros((2, 1), dtype='float32')
         
         # Assign the cue at the upper left corner so that the first column of the 
         # null input is actually the recall cue.
         #null_input[0,0] = 1
         
-        padding_for_trial = np.zeros((trial_length,))
+        padding_for_trial = np.zeros((trial_length,), dtype='float32')
         padding_for_trial[-1] = 1.
         
         #Generate one trial based on the specifications
@@ -571,6 +569,7 @@ def generate_nback_wm_trials(
         
         #trial = np.zeros((1, trial_length))
         trial = np.random.uniform(0., 1., trial_length)
+        trial = trial.astype('float32')
         trial = np.reshape(trial, (1, trial_length))
         
         #Mark the positions of the target picture with 1s and assign the 
@@ -578,10 +577,10 @@ def generate_nback_wm_trials(
         #n_back. Take into account if the trials are 
         #trial_matching = True or False
         #trial_idxs = np.zeros((trial_length,))
-        
+         
         #target_value = random.sample(range(0, 2), 1)
         target_value = np.random.uniform(0., 1., 1)
-        
+        target_value = target_value.astype('float32')
         if trial_matching is True:
             trial[0, trial_length-1] = target_value[0]
             trial[0, (trial_length-n_back-1)] = target_value[0]
@@ -602,7 +601,7 @@ def generate_nback_wm_trials(
         # 2:n_back matches=True
         # Hence, the output trials correspond to the correct labels of 
         # a 3-class classification problem
-        output_trial = np.zeros((1, trial_length+1))#Add 1 column to have the same length with input
+        output_trial = np.zeros((1, trial_length+1), dtype = 'float32')#Add 1 column to have the same length with input
         
         #Assign the correct labeling
         if trial_matching is True:
@@ -621,7 +620,7 @@ def generate_nback_wm_trials(
             all_output_trials = np.hstack((all_output_trials, output_trial))
             
         # Construct the indexes to keep track of the trials
-        current_index = np.zeros(input_trial.shape[1],)
+        current_index = np.zeros(input_trial.shape[1], dtype = 'float32')
         current_index[:] = tr
                
         if all_trials_index is None:           
@@ -871,4 +870,3 @@ def create_trials(trial_params):
     X[1], Y[1], indexes[1] = auxfun.group_shuffle(X[1], Y[1], indexes[1])
     
     return X, Y, indexes
-

@@ -57,7 +57,7 @@ params_generators = {
                      'num_workers': 0
                      }
  
-neuron_density = np.zeros((rnn_size,), dtype=int)
+neuron_density = np.zeros((rnn_size,), dtype = int)
 neuron_density[:] = nr_neurons 
 
 C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
@@ -71,7 +71,7 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     keep_diag = False
     )
 
-C_Neurons = torch.Tensor(C_Neurons).double()
+C_Neurons = torch.Tensor(C_Neurons)
 C_Neurons.to(device)
 
 # Spacify the common model parameters across tasks.
@@ -277,10 +277,8 @@ for combo_index, combination in enumerate(all_combos):
                                               params_to_freeze=names[1]
                                               )
             
-            # Change all params of model to double 
-            # Also send model to device - this has to be prior to the 
-            # optimizer definition! 
-            #model = model.double()             
+            # Send model to device - this has to be prior to the 
+            # optimizer definition!             
             model = model.to(device)            
             
             # Intialize optimizer and cost based on task
