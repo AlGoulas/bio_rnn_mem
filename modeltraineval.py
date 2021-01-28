@@ -238,7 +238,6 @@ def test_model(
     for X_batch, Y_batch in data_generator:
         # Send tensors to the device used
         X_batch, Y_batch = X_batch.to(device), Y_batch.to(device)
-        
         output, hidden = model(X_batch)
         
         # Store the hidden states if requested
@@ -259,7 +258,6 @@ def test_model(
         
         loss = criterion(output, Y_batch)
         batch_loss.append(loss.data.item())
-        
         if 'acc' in metrics:
             acc = auxfun.calc_accuracy(output=output, labels=Y_batch)
             batch_metrics.append(acc)
@@ -267,10 +265,8 @@ def test_model(
         # This calculates a null prediction on the current input to the model!
         # Null models could also be constructed only on the train input data                
         if calc_null is True:
-            idx = torch.where(X_batch[:, :, 1] !=0)#create null mean pediction
-            
-            length = X_batch[idx[0],idx[1],1].shape[0]
-            
+            idx = torch.where(X_batch[:, :, 1] !=0)#create null mean pediction    
+            length = X_batch[idx[0],idx[1],1].shape[0]    
             null_prediction = torch.full((length, 1), 
                                           torch.mean(X_batch[idx[0],idx[1],1]))
             
@@ -407,7 +403,6 @@ def train_validate_epochs(
         # Store the mean of all the batch-wise training losses for the current 
         # epoch
         epoch_train_loss.append(statistics.mean(batch_loss)) 
-        
         if batch_loss_null:
             epoch_train_loss_null.append(statistics.mean(batch_loss_null))
             
@@ -447,7 +442,6 @@ def train_validate_epochs(
         # Store the mean of all the batch-wise validation losses for the current 
         # epoch
         epoch_validate_loss.append(statistics.mean(batch_loss)) 
-      
         if batch_loss_null:
             epoch_validate_loss_null.append(statistics.mean(batch_loss_null))
         

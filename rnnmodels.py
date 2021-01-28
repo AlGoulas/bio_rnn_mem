@@ -61,8 +61,8 @@ class Model(nn.Module):
                         
         # TODO:  biases??!    
         if init == 'xavier':
-            w_hh = torch.empty(hidden_dim, hidden_dim).double()
-            w_ih = torch.empty(hidden_dim, input_size).double() 
+            w_hh = torch.empty(hidden_dim, hidden_dim)
+            w_ih = torch.empty(hidden_dim, input_size) 
             
             w_hh = w_hh.to(self.device)
             w_ih = w_ih.to(self.device)
@@ -75,8 +75,8 @@ class Model(nn.Module):
         
         # TODO:  biases??!                   
         if init == 'he':
-            w_hh = torch.empty(hidden_dim, hidden_dim).double()
-            w_ih = torch.empty(hidden_dim, input_size).double() 
+            w_hh = torch.empty(hidden_dim, hidden_dim)
+            w_ih = torch.empty(hidden_dim, input_size)
             
             w_hh = w_hh.to(self.device)
             w_ih = w_ih.to(self.device)
@@ -91,12 +91,12 @@ class Model(nn.Module):
         self.fc = nn.Linear(hidden_dim, output_size)
         
         if init == 'xavier':
-            w_fc = torch.empty(output_size, hidden_dim).double()
+            w_fc = torch.empty(output_size, hidden_dim)
             nn.init.xavier_uniform_(w_fc)
             self.fc.weight = torch.nn.Parameter(w_fc)
             
         if init == 'he':
-            w_fc = torch.empty(output_size, hidden_dim).double()
+            w_fc = torch.empty(output_size, hidden_dim)
             nn.init.kaiming_uniform_(w_fc, mode='fan_in')
             self.fc.weight = torch.nn.Parameter(w_fc)
         
@@ -136,7 +136,7 @@ class Model(nn.Module):
         # every batch.
         hidden = torch.zeros(self.n_layers, 
                               batch_size, 
-                              self.hidden_dim).double()
+                              self.hidden_dim)
         
         hidden = hidden.to(self.device)     
 
@@ -238,12 +238,12 @@ class ModelBio(Model):
         # initialized automatically when specified. So if default,
         # just access w_hh to apply threshold  
         if init == 'default':
-            w_hh = self.rnn.weight_hh_l0.detach().clone().double()
+            w_hh = self.rnn.weight_hh_l0.detach().clone()
             
         # TODO:  biases??!    
         if init == 'xavier':
-            w_hh = torch.empty(hidden_dim, hidden_dim).double()
-            w_ih = torch.empty(hidden_dim, input_size).double() 
+            w_hh = torch.empty(hidden_dim, hidden_dim)
+            w_ih = torch.empty(hidden_dim, input_size) 
             
             nn.init.xavier_uniform_(w_hh)
             nn.init.xavier_uniform_(w_ih)
@@ -251,8 +251,8 @@ class ModelBio(Model):
             self.rnn.weight_ih_l0 = torch.nn.Parameter(w_ih, requires_grad=True)
             
         if init == 'he':
-            w_hh = torch.empty(hidden_dim, hidden_dim).double()
-            w_ih = torch.empty(hidden_dim, input_size).double() 
+            w_hh = torch.empty(hidden_dim, hidden_dim)
+            w_ih = torch.empty(hidden_dim, input_size) 
             
             nn.init.kaiming_uniform_(w_hh, mode='fan_out')
             nn.init.kaiming_uniform_(w_ih, mode='fan_out')
@@ -275,12 +275,12 @@ class ModelBio(Model):
         self.fc = nn.Linear(hidden_dim, output_size)
         
         if init == 'xavier':
-            w_fc = torch.empty(output_size, hidden_dim).double() 
+            w_fc = torch.empty(output_size, hidden_dim) 
             nn.init.xavier_uniform_(w_fc)
             self.fc.weight = torch.nn.Parameter(w_fc, requires_grad=True)
             
         if init == 'he': 
-            w_fc = torch.empty(output_size, hidden_dim).double()
+            w_fc = torch.empty(output_size, hidden_dim)
             nn.init.kaiming_uniform_(w_fc, mode='fan_out')
             self.fc.weight = torch.nn.Parameter(w_fc, requires_grad=True)
         

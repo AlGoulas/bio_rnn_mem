@@ -57,7 +57,7 @@ params_generators = {
                      'num_workers': 0
                      }
  
-neuron_density = np.zeros((rnn_size,), dtype=int)
+neuron_density = np.zeros((rnn_size,), dtype = int)
 neuron_density[:] = nr_neurons 
 
 C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
@@ -71,7 +71,7 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     keep_diag = False
     )
 
-C_Neurons = torch.Tensor(C_Neurons).double()
+C_Neurons = torch.Tensor(C_Neurons)
 C_Neurons.to(device)
 
 # Spacify the common model parameters across tasks.
@@ -128,8 +128,7 @@ if trial_params['task_name'] == 'nback_mem' or trial_params['task_name'] == 'pic
 else:
     metrics = []
 
-# Run the experiment  
-        
+# Run the experiment   
 # Loop through all the combos and train and validate the model with the given
 # params dictated by each entry in the all_combos
 for combo_index, combination in enumerate(all_combos):
@@ -278,11 +277,9 @@ for combo_index, combination in enumerate(all_combos):
                                               params_to_freeze=names[1]
                                               )
             
-            # Change all params of model to double 
-            # Also send model to device - this has to be prior to the 
-            # optimizer definition! 
-            model = model.double()             
-            model = model.to(device)           
+            # Send model to device - this has to be prior to the 
+            # optimizer definition!             
+            model = model.to(device)            
             
             # Intialize optimizer and cost based on task
             if trial_params['task_name'] == 'seq_mem':
@@ -347,11 +344,11 @@ for combo_index, combination in enumerate(all_combos):
     # the metrics list is not empty if no metrics were used - it 
     # contains two empty lists (no train and validation metrics).
     # Thus check if the first element is an empty list to decide
-    # if it should be saved or not  
+    # if it should be saved or not.  
     if metrics[0]:
         file_to_save = results_folder / str(combo_index) / 'train_metrics_all'
         np.save(file_to_save, train_metrics_all)
         
         file_to_save = results_folder / str(combo_index) / 'validate_metrics_all'
         np.save(file_to_save, validate_metrics_all)
-    
+        

@@ -34,9 +34,7 @@ def group_shuffle(X, Y, indexes):
     '''
     unique_indexes = np.unique(indexes)
     unique_indexes = unique_indexes[np.random.permutation(len(unique_indexes))]
-    
     rearrange_idx = None
-    
     for i in range(0, len(unique_indexes)):
         idx = np.where(unique_indexes[i] == indexes)[0]
         if rearrange_idx is None:
@@ -72,7 +70,6 @@ def combo_params(params):
     '''
     all_values = []
     all_keys = []
-       
     # assemble the values of the dictionaries in a list 
     for value in params.values():
         all_values.append(value)
@@ -110,8 +107,7 @@ def map_weights_to_template(w_template=None, w_to_map=None):
             rank order of X[i,j] == rank order of w_template[i,j] where 
             i,j in X[i,j] belongs to all non_zeros values in w_to_map 
     '''
-    X = torch.zeros(w_template.shape).double()
-    
+    X = torch.zeros(w_template.shape)
     idx = torch.where(w_template!=0)
     w_template_values = w_template[idx]
     w_to_map_values = w_to_map[idx]
@@ -232,9 +228,10 @@ def calc_accuracy(output=None, labels=None):
     return acc
 
 def save_model_state(model, 
-                     epoch=None, 
-                     iteration=None,
-                     folder_name=None):
+                     epoch = None, 
+                     iteration = None,
+                     folder_name = None
+                     ):
        '''
        Save the model's state dict
        
@@ -260,10 +257,11 @@ def save_model_state(model,
        
 # Load pretrained model
 def load_pretrained(model,
-                    pretrained_folder=None, 
-                    epoch=0,
-                    it=0,
-                    combo_nr=0):
+                    pretrained_folder = None, 
+                    epoch = 0,
+                    it = 0,
+                    combo_nr = 0
+                    ):
     '''
     Load the model's state dict
        
@@ -302,7 +300,7 @@ def load_pretrained(model,
     return model           
        
 # Scale tensor to [0 1] by takin into account the global min and max
-def scale_tensor(X, global_scaling=True, epsilon=1e-12):
+def scale_tensor(X, global_scaling = True, epsilon = 1e-12):
     '''
     Scale tensor to [0 1] by takin into account the global min and max 
     (global_scaling=True) or the row-wise min max (global_scaling=False)
@@ -339,7 +337,7 @@ def scale_tensor(X, global_scaling=True, epsilon=1e-12):
         
     return X_norm   
 
-def concatenate_arrays(master_container=None, leech=None, mode='h'):
+def concatenate_arrays(master_container = None, leech = None, mode = 'h'):
     '''
     Concatenate ndarrays vertically or horizontally
     
@@ -374,9 +372,9 @@ def concatenate_arrays(master_container=None, leech=None, mode='h'):
     return master_container  
 
 def calculate_metrics(model,
-                      file_to_model=None, 
-                      metrics=[],
-                      params_to_get=None 
+                      file_to_model = None, 
+                      metrics = [],
+                      params_to_get = None 
                       ):
     '''
     Compute network metrics on a specified layer of a given PyTorch model that 
@@ -446,7 +444,7 @@ def min_loss(losses):
     
     return all_losses 
    
-def min_loss_epoch(losses, perc=None):
+def min_loss_epoch(losses, perc = None):
     '''
     Get the index of min value for each row in losses.
     
@@ -502,10 +500,11 @@ def reshape_to_vector(x):
     return x_reshaped 
 
 # Read the results and extract desired quantiities
-def read_results(results_folder=None, 
-                 results_id=None,
-                 start=None,
-                 stop=None):
+def read_results(results_folder = None, 
+                 results_id = None,
+                 start = None,
+                 stop = None
+                 ):
     
     #Dict to store all raw results
     raw_results = {}
@@ -582,7 +581,7 @@ def read_results(results_folder=None,
     
     return raw_results, quantities_on_results, ep, iterations 
 
-def extend_list(list_to_ext=None, ext=None):
+def extend_list(list_to_ext = None, ext = None):
     '''
     Extend a list of lists as follows:
     Construct a new list of lists ext_list such that the first list of 
