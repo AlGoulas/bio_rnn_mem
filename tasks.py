@@ -22,7 +22,6 @@ class Dataset(data.Dataset):
         self.trials_out = trials_out
         self.trial_ids = trial_ids
         unique_trial_ids = np.unique(trial_ids)# get the unique ids
-        
         #permute to ensure mixed labels/trials in the batch and assign to object!!!
         self.unique_trial_ids = unique_trial_ids[np.random.permutation(len(unique_trial_ids))]
 
@@ -34,9 +33,7 @@ class Dataset(data.Dataset):
         # Generates one trial
         # Select sample
         current_id = self.unique_trial_ids[index]
-
-        idx = np.where(current_id == self.trial_ids)[0]    
-        
+        idx = np.where(current_id == self.trial_ids)[0]            
         # Load data and get label
         X = self.trials_in[idx, :]
         Y = self.trials_out[idx, :]
@@ -85,7 +82,6 @@ def generate_sequence_patterns(
     all_input_trials = None
     all_output_trials = None
     all_trials_index = None
-        
     for tr in range(nr_of_trials):
         # Create here standard blocks of the trials, namely the cue and "null input"
         # The cue is a 1 on a channel that is not used for the patterns,
@@ -94,15 +90,16 @@ def generate_sequence_patterns(
         # when the reservoir has to replay the patterns. 
         
         # 1 is presented only once, with zeros following it for the "null input"   
-        null_input = np.zeros((2, pattern_length+1))
+        null_input = np.zeros((2, pattern_length+1), dtype='float32')
         
         # Assign the cue at the upper left corner so that the first column of the 
         # null input is actually the recall cue.
         null_input[0,0] = 1
-        padding_for_trial = np.zeros((pattern_length,))
+        padding_for_trial = np.zeros((pattern_length,), dtype='float32')
         
         #Generate one trial based on the specifications
         trial = np.random.uniform(low, high, pattern_length)
+        trial = trial.astype('float32')
     
         # Add the padding that corresponds to a cue=0 (that means no replaying yet,
         # but leanrning the input patterns)
@@ -115,7 +112,7 @@ def generate_sequence_patterns(
         
         # We need no padding for the output (no "cue needed"). Just require 0s
         # when the pattern is being learned.
-        null_output = np.zeros((1, pattern_length+1))#Add 1 column to have the same length with input
+        null_output = np.zeros((1, pattern_length+1), dtype='float32')#Add 1 column to have the same length with input
         trial = trial[1:,:]   
         output_trial = np.hstack((null_output, trial))
         
@@ -129,21 +126,18 @@ def generate_sequence_patterns(
             all_output_trials = np.hstack((all_output_trials, output_trial))
             
         # Construct the indexes to keep track of the trials
-        current_index = np.zeros(input_trial.shape[1],)
+        current_index = np.zeros(input_trial.shape[1], dtype='float32')
         current_index[:] = tr
                
         if all_trials_index is None:            
             all_trials_index = current_index            
         else:            
             all_trials_index = np.hstack((all_trials_index, current_index))
-        
-    
+            
     all_input_trials = all_input_trials.T
     all_output_trials = all_output_trials.T
-    
     all_trials_index = all_trials_index.T
         
-    
     return all_input_trials, all_output_trials, all_trials_index   
 
 def generate_pic_wm_trials(

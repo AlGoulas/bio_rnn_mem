@@ -128,8 +128,7 @@ if trial_params['task_name'] == 'nback_mem' or trial_params['task_name'] == 'pic
 else:
     metrics = []
 
-# Run the experiment  
-        
+# Run the experiment   
 # Loop through all the combos and train and validate the model with the given
 # params dictated by each entry in the all_combos
 for combo_index, combination in enumerate(all_combos):
@@ -281,8 +280,8 @@ for combo_index, combination in enumerate(all_combos):
             # Change all params of model to double 
             # Also send model to device - this has to be prior to the 
             # optimizer definition! 
-            model = model.double()             
-            model = model.to(device)           
+            #model = model.double()             
+            model = model.to(device)            
             
             # Intialize optimizer and cost based on task
             if trial_params['task_name'] == 'seq_mem':
