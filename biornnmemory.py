@@ -347,11 +347,11 @@ for combo_index, combination in enumerate(all_combos):
     # the metrics list is not empty if no metrics were used - it 
     # contains two empty lists (no train and validation metrics).
     # Thus check if the first element is an empty list to decide
-    # if it should be saved or not  
+    # if it should be saved or not.  
     if metrics[0]:
         file_to_save = results_folder / str(combo_index) / 'train_metrics_all'
         np.save(file_to_save, train_metrics_all)
         
         file_to_save = results_folder / str(combo_index) / 'validate_metrics_all'
         np.save(file_to_save, validate_metrics_all)
-    
+        
