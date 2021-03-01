@@ -1,6 +1,6 @@
 # Bio-instantiated recurrent neural networks and working memory
 
-Create and train bio-instantiated recurrent neural networks that perform working memory tasks. 
+Create and train bio-instantiated recurrent neural networks that perform working memory tasks 
 
 ![bio_rnn_mem](bio_rnn_mem.png) 
 
