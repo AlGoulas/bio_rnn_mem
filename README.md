@@ -5,7 +5,7 @@ Create and train bio-instantiated recurrent neural networks that perform working
 ![bio_rnn_mem](bio_rnn_mem.png) 
 
 # Description
-While the interest in the relation between artifical and biological neural networks has generated a plethora of studies, attention is promarily directed towards the neurobiological plausibility of learnign rules and the similarity of visual representation in artificial and natural systems. The similarity and differences of the ***network topology*** of artificial and natural systems is examined only through the lens of abstract analogies, without a direct incorporation of the network topology found in biological neural system, such as the primate brain, in artifical neural networks.
+While the interest in the relation between artifical and biological neural networks has generated a plethora of studies, attention is primarily directed towards the neurobiological plausibility of learnign rules and the similarity of visual representation in artificial and natural systems. The similarity and differences of the ***network topology*** of artificial and natural systems is examined only through the lens of abstract analogies, without a direct incorporation of the network topology found in biological neural system, such as the primate brain, in artifical neural networks.
 
 This project instantiates the topology of biological neural networks (monkey and human brain networks) in recurrent neural networks with different strategies. The bio-instantiated artifical networks are tested in working memory tasks, that is, tasks that require tracking of information across time.
 
