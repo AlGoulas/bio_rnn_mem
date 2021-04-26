@@ -266,7 +266,8 @@ for combo_index, combination in enumerate(all_combos):
             
                 # Hidden is the parameter with names[1]
                 model = auxfun.freeze_params(model,
-                                             params_to_freeze=names[1])
+                                             params_to_freeze=names[1],
+                                             update=False)
             
             # Change all params of model to double 
             # Also send model to device - this has to be prior to the 

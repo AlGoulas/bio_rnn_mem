@@ -7,8 +7,7 @@ import torch
 import auxfun
 import tasks
 
-def train_validate_model(
-                         model, 
+def train_validate_model(model, 
                          data_generator = None, 
                          optimizer = None, 
                          criterion = None, 
@@ -19,10 +18,8 @@ def train_validate_model(
                          w = None,
                          metrics = [],
                          task_name = None,
-                         device = 'cpu'
-                         ):
-    '''
-    Train or validate a model in one epoch
+                         device = 'cpu'):
+    '''Train or validate a model in one epoch
     
     Input
     -----
@@ -154,8 +151,7 @@ def train_validate_model(
     return batch_loss, batch_loss_null, batch_metrics, batch_metrics_null
 
 # Test model
-def test_model(
-               model, 
+def test_model(model, 
                data_generator = None, 
                criterion = None, 
                calc_null = True,
@@ -164,10 +160,8 @@ def test_model(
                metrics = None,
                task_name = None,
                device = 'cpu',
-               save_hidden = False
-               ):
-    '''
-    Test a model
+               save_hidden = False):
+    '''Test a model
     
     Input
     -----
@@ -280,8 +274,7 @@ def test_model(
     return batch_loss, batch_loss_null, batch_metrics, all_hidden
 
 # train, validate across epochs
-def train_validate_epochs(
-                          model, 
+def train_validate_epochs(model, 
                           epochs = 100,
                           training_generator = None,
                           validate_generator = None, 
@@ -296,10 +289,8 @@ def train_validate_epochs(
                           device = 'cpu',
                           store_every_epoch = None,
                           folder_save_model = None,
-                          iteration = None
-                          ):
-    '''
-    Train and validate a model across epochs
+                          iteration = None):
+    '''Train and validate a model across epochs
     
     Input
     -----
@@ -475,13 +466,13 @@ def train_validate_epochs(
                   ' Train acc: ', epoch_train_metrics[-1], 
                   ' Train acc null: ', epoch_train_metrics_null[-1], 
                   ' Val acc: ', epoch_validate_metrics[-1],
-                  ' Val acc null: ', epoch_validate_metrics_null[-1],
+                  ' Val acc null: ', epoch_validate_metrics_null[-1]
                   )
             
         if calc_null is False and not batch_metrics:
                print('Epoch',epoch+1,'/', epochs,
                   ' Train loss: ', epoch_train_loss[-1], 
-                  ' Val loss: ', epoch_validate_loss[-1],
+                  ' Val loss: ', epoch_validate_loss[-1]
                   )
                     
     # Assign the outcome of the training, validation of the model
