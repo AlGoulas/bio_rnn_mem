@@ -195,17 +195,15 @@ for combo_index, combination in enumerate(all_combos):
                                 
             # Initiate model
             if not pretrained_folder:    
-                model = rnnmodels.ModelBio(
-                                            input_size = model_params.get('input_size'), 
-                                            output_size = model_params.get('output_size'), 
-                                            hidden_dim = model_params.get('hidden_dim'), 
-                                            n_layers = 1,
-                                            w = w,
-                                            remap_w = remap_w,
-                                            init = init,
-                                            nonlinearity = nonlinearity,
-                                            device = device
-                                            )
+                model = rnnmodels.ModelBio(input_size = model_params.get('input_size'), 
+                                           output_size = model_params.get('output_size'), 
+                                           hidden_dim = model_params.get('hidden_dim'), 
+                                           n_layers = 1,
+                                           w = w,
+                                           remap_w = remap_w,
+                                           init = init,
+                                           nonlinearity = nonlinearity,
+                                           device = device)
                                 
             # if pretrained is selected, then load the pretrained and modify it
             # to perform the task
@@ -231,12 +229,11 @@ for combo_index, combination in enumerate(all_combos):
                     
                     # Plug in a linear layer
                     new_modules = [
-                            nn.Linear(model_params.get('hidden_dim'),
-                                      1),
-                            ]
+                                   nn.Linear(model_params.get('hidden_dim'),
+                                             1),
+                                  ]
                     
-                model = rnnmodels.ModelBio(
-                                           input_size = model_params.get('input_size'), 
+                model = rnnmodels.ModelBio(input_size = model_params.get('input_size'), 
                                            output_size = output_size, 
                                            hidden_dim = model_params.get('hidden_dim'), 
                                            n_layers = 1,
@@ -244,39 +241,32 @@ for combo_index, combination in enumerate(all_combos):
                                            remap_w = remap_w,
                                            init = init,
                                            nonlinearity = nonlinearity,
-                                           device = device
-                                           )
+                                           device = device)
                             
                 # load pretrained model that has performed seq_mem
                 print('\nLoading pretrained model...!\n') 
-                model = auxfun.load_pretrained(
-                                                model,
-                                                pretrained_folder = pretrained_folder, 
-                                                epoch = pretrained_epoch,
-                                                it = pretrained_iteration,
-                                                combo_nr = combo_index
-                                                )
+                model = auxfun.load_pretrained(model,
+                                               pretrained_folder = pretrained_folder, 
+                                               epoch = pretrained_epoch,
+                                               it = pretrained_iteration,
+                                               combo_nr = combo_index)
                 
                 # Modify the pretrained loaded model, so that it
                 # can perform the nback_mem task  
                 print('\nModifying model...\n') 
-                model = rnnmodels.ModelBio_Modified(
-                                                     model = model, 
-                                                     n_last_layers = n_last_layers,
-                                                     new_modules = new_modules
-                                                     )
+                model = rnnmodels.ModelBio_Modified(model = model, 
+                                                    n_last_layers = n_last_layers,
+                                                    new_modules = new_modules)
             
             # If asked freeze the hidden layer
             # Freeze the hidden layer
             if freeze_layer is True:  
                 print('\nFreezing hidden layer of the model...!\n') 
-                values, names = auxfun.get_model_params(model)
+                values, names, req_grad = auxfun.get_model_params(model)
             
                 # Hidden is the parameter with names[1]
-                model = auxfun.freeze_params(
-                                              model,
-                                              params_to_freeze=names[1]
-                                              )
+                model = auxfun.freeze_params(model,
+                                             params_to_freeze=names[1])
             
             # Change all params of model to double 
             # Also send model to device - this has to be prior to the 
