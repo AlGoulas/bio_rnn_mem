@@ -11,8 +11,7 @@ import torch
 import networkmetrics
 
 def group_shuffle(X, Y, indexes):
-    '''
-    Shuffle the rows of X and Y by keeping row with the same index grouped
+    '''Shuffle the rows of X and Y by keeping row with the same index grouped
     
     Input
     -----
@@ -49,8 +48,7 @@ def group_shuffle(X, Y, indexes):
     return X, Y, indexes
         
 def combo_params(params):
-    '''
-    Create a list with tuples denoting all possible combos of values to run
+    '''Create a list with tuples denoting all possible combos of values to run
     the model with. Parameters are specified in the dictionary params
     
     Input
@@ -82,9 +80,8 @@ def combo_params(params):
     
     return all_combos, all_keys
            
-def map_weights_to_template(w_template=None, w_to_map=None):
-    '''
-    Reorder the values of w_to_map in such a way that the valeus obey the 
+def map_weights_to_template(w_template = None, w_to_map = None):
+    '''Reorder the values of w_to_map in such a way that the valeus obey the 
     rank ordering of the values in w_template.
     The result is X so that: 
         rank order of X[i,j] == rank order of w_template[i,j] where 
@@ -114,12 +111,12 @@ def map_weights_to_template(w_template=None, w_to_map=None):
     
     (sorted_w_template, 
     sorted_index_w_template) = torch.sort(w_template_values, 
-                                          dim=0, 
+                                          dim = 0, 
                                           descending=True)
     
     (sorted_w_to_map, 
      sorted_index_w_to_map) = torch.sort(w_to_map_values, 
-                                         dim=0, 
+                                         dim = 0, 
                                          descending=True)
         
     X[idx[0][sorted_index_w_template], 
@@ -130,9 +127,8 @@ def map_weights_to_template(w_template=None, w_to_map=None):
 # Auxiliary function to get the desired parameters from the model
 # model: the model from which we should fetch parameters 
 # params_to_get: a list of str specifying the names of the params to be fetched     
-def get_model_params(model, params_to_get=None):
-    '''
-    Extracts the parameters, names, and 'requires gradient' status from a 
+def get_model_params(model, params_to_get = None):
+    '''Extracts the parameters, names, and 'requires gradient' status from a 
     model.
     
     Input
@@ -172,10 +168,9 @@ def get_model_params(model, params_to_get=None):
 
 # Freeze (update=False) or unfreeze (update=True) model params
 def freeze_params(model, 
-                  params_to_freeze=None,
-                  update=True):  
-    '''
-    Freeze or unfreeze the parametrs of a model
+                  params_to_freeze = None,
+                  update = True):  
+    '''Freeze or unfreeze the parametrs of a model
     
     Input
     -----
@@ -202,9 +197,8 @@ def freeze_params(model,
     
     return model
 
-def calc_accuracy(output=None, labels=None):
-    '''
-    Classification accuracy calculation as acc = (TP + TN) / nr total pred
+def calc_accuracy(output = None, labels = None):
+    '''Classification accuracy calculation as acc = (TP + TN) / nr total pred
     
     Input
     -----
@@ -230,10 +224,8 @@ def calc_accuracy(output=None, labels=None):
 def save_model_state(model, 
                      epoch = None, 
                      iteration = None,
-                     folder_name = None
-                     ):
-       '''
-       Save the model's state dict
+                     folder_name = None):
+       '''Save the model's state dict
        
        Input
        -----
@@ -260,10 +252,8 @@ def load_pretrained(model,
                     pretrained_folder = None, 
                     epoch = 0,
                     it = 0,
-                    combo_nr = 0
-                    ):
-    '''
-    Load the model's state dict
+                    combo_nr = 0):
+    '''Load the model's state dict
        
     Input
     -----
@@ -301,8 +291,7 @@ def load_pretrained(model,
        
 # Scale tensor to [0 1] by takin into account the global min and max
 def scale_tensor(X, global_scaling = True, epsilon = 1e-12):
-    '''
-    Scale tensor to [0 1] by takin into account the global min and max 
+    '''Scale tensor to [0 1] by takin into account the global min and max 
     (global_scaling=True) or the row-wise min max (global_scaling=False)
     
     Input
@@ -323,13 +312,13 @@ def scale_tensor(X, global_scaling = True, epsilon = 1e-12):
     if global_scaling is True:
         min_val = torch.min(X)
         max_val = torch.max(X)
-        denom = torch.clamp(max_val-min_val, min=2*epsilon)
+        denom = torch.clamp(max_val-min_val, min = 2*epsilon)
         nom = X-min_val
         X_norm = torch.div(nom+epsilon, denom)
     else:
         min_val = torch.min(X, dim=1)[0]
         max_val = torch.max(X, dim=1)[0]
-        denom = torch.clamp(max_val-min_val, min=2*epsilon)
+        denom = torch.clamp(max_val-min_val, min = 2*epsilon)
         nom = X.T-min_val
         nom = nom.T + epsilon
         X_norm = torch.div(nom.T, denom)
@@ -337,9 +326,10 @@ def scale_tensor(X, global_scaling = True, epsilon = 1e-12):
         
     return X_norm   
 
-def concatenate_arrays(master_container = None, leech = None, mode = 'h'):
-    '''
-    Concatenate ndarrays vertically or horizontally
+def concatenate_arrays(master_container = None, 
+                       leech = None, 
+                       mode = 'h'):
+    '''Concatenate ndarrays vertically or horizontally
     
     Input
     -----
@@ -374,10 +364,8 @@ def concatenate_arrays(master_container = None, leech = None, mode = 'h'):
 def calculate_metrics(model,
                       file_to_model = None, 
                       metrics = [],
-                      params_to_get = None 
-                      ):
-    '''
-    Compute network metrics on a specified layer of a given PyTorch model that 
+                      params_to_get = None):
+    '''Compute network metrics on a specified layer of a given PyTorch model that 
     is stored.
     
     Input
@@ -427,8 +415,7 @@ def calculate_metrics(model,
 
 # Get the min loss
 def min_loss(losses):
-    '''
-    Find min value in each row of ndarray losses
+    '''Find min value in each row of ndarray losses
     
     Input
     -----
@@ -445,8 +432,7 @@ def min_loss(losses):
     return all_losses 
    
 def min_loss_epoch(losses, perc = None):
-    '''
-    Get the index of min value for each row in losses.
+    '''Get the index of min value for each row in losses.
     
     If a perc is specified, then the index of the min value in each row
     satisfies the following:
@@ -480,8 +466,7 @@ def min_loss_epoch(losses, perc = None):
     return all_min_loss_ep    
 
 def reshape_to_vector(x):
-    '''
-    Reshape an ndarray x
+    '''Reshape an ndarray x
     
     Input
     -----
@@ -503,9 +488,7 @@ def reshape_to_vector(x):
 def read_results(results_folder = None, 
                  results_id = None,
                  start = None,
-                 stop = None
-                 ):
-    
+                 stop = None):
     #Dict to store all raw results
     raw_results = {}
     
@@ -582,8 +565,7 @@ def read_results(results_folder = None,
     return raw_results, quantities_on_results, ep, iterations 
 
 def extend_list(list_to_ext = None, ext = None):
-    '''
-    Extend a list of lists as follows:
+    '''Extend a list of lists as follows:
     Construct a new list of lists ext_list such that the first list of 
     ext_list is a list of li[n]*ext where li is the ith list in list_to_ext
     and n is the nth item of list li. The construction of ext_list proceeds
@@ -638,8 +620,7 @@ def extend_list(list_to_ext = None, ext = None):
 
 # Clean string from special characters
 def clean_str(dirty_string):
-    '''
-    Clean string from special characters and return a list with the
+    '''Clean string from special characters and return a list with the
     clean strings. This is a tailored cleaning that corresponds to a 
     specific input string format.
     
@@ -656,13 +637,10 @@ def clean_str(dirty_string):
     
     return clean_strings
 
-def get_activation_model(
-                        model, 
-                        data_generator = None, 
-                        device = 'cpu'
-                        ): 
-    ''''
-    Obtain the activations of the last hidden layer of an Elman RNN.
+def get_activation_model(model, 
+                         data_generator = None, 
+                         device = 'cpu'): 
+    '''Obtain the activations of the last hidden layer of an Elman RNN.
     
     Input
     -----
@@ -696,8 +674,7 @@ def get_activation_model(
     return all_hidden
 
 def compute_coactivation(batch_time_activations):
-    ''' 
-    Compute coactivations based on activity in the ndarrray 
+    '''Compute coactivations based on activity in the ndarrray 
     batch_time_activations  
     
     Input
@@ -725,8 +702,7 @@ def compute_coactivation(batch_time_activations):
     return all_coact_np
 
 def get_mean_coactivation(all_hidden):
-    '''
-    Compute mean coactivations based on activity in the list of tensors 
+    '''Compute mean coactivations based on activity in the list of tensors 
     all_hidden  
     
     Input
@@ -751,8 +727,7 @@ def get_mean_coactivation(all_hidden):
         coactivations = mean_coact[idx]
         all_coactivations = concatenate_arrays(master_container=all_coactivations,
                                                leech=coactivations,
-                                               mode='v'
-                                               )
+                                               mode='v')
     mean_coactivations = np.mean(all_coactivations, axis=0)
     
     return mean_coactivations 

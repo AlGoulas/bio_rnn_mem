@@ -68,8 +68,7 @@ C, C_Neurons, Region_Neuron_Ids = importnet.from_conn_mat(
     intrinsic_conn = True, 
     target_sparsity_intrinsic = 1.,
     rand_partition = rand_partition,
-    keep_diag = False
-    )
+    keep_diag = False)
 
 C_Neurons = torch.Tensor(C_Neurons)
 C_Neurons.to(device)
@@ -194,17 +193,15 @@ for combo_index, combination in enumerate(all_combos):
                                 
             # Initiate model
             if not pretrained_folder:    
-                model = rnnmodels.ModelBio(
-                                            input_size = model_params.get('input_size'), 
-                                            output_size = model_params.get('output_size'), 
-                                            hidden_dim = model_params.get('hidden_dim'), 
-                                            n_layers = 1,
-                                            w = w,
-                                            remap_w = remap_w,
-                                            init = init,
-                                            nonlinearity = nonlinearity,
-                                            device = device
-                                            )
+                model = rnnmodels.ModelBio(input_size = model_params.get('input_size'), 
+                                           output_size = model_params.get('output_size'), 
+                                           hidden_dim = model_params.get('hidden_dim'), 
+                                           n_layers = 1,
+                                           w = w,
+                                           remap_w = remap_w,
+                                           init = init,
+                                           nonlinearity = nonlinearity,
+                                           device = device)
                                 
             # if pretrained is selected, then load the pretrained and modify it
             # to perform the task
@@ -234,8 +231,7 @@ for combo_index, combination in enumerate(all_combos):
                                       1),
                             ]
                     
-                model = rnnmodels.ModelBio(
-                                           input_size = model_params.get('input_size'), 
+                model = rnnmodels.ModelBio(input_size = model_params.get('input_size'), 
                                            output_size = output_size, 
                                            hidden_dim = model_params.get('hidden_dim'), 
                                            n_layers = 1,
@@ -243,27 +239,22 @@ for combo_index, combination in enumerate(all_combos):
                                            remap_w = remap_w,
                                            init = init,
                                            nonlinearity = nonlinearity,
-                                           device = device
-                                           )
+                                           device = device)
                             
                 # load pretrained model that has performed seq_mem
                 print('\nLoading pretrained model...!\n') 
-                model = auxfun.load_pretrained(
-                                                model,
-                                                pretrained_folder = pretrained_folder, 
-                                                epoch = pretrained_epoch,
-                                                it = pretrained_iteration,
-                                                combo_nr = combo_index
-                                                )
+                model = auxfun.load_pretrained(model,
+                                               pretrained_folder = pretrained_folder, 
+                                               epoch = pretrained_epoch,
+                                               it = pretrained_iteration,
+                                               combo_nr = combo_index)
                 
                 # Modify the pretrained loaded model, so that it
                 # can perform the nback_mem task  
                 print('\nModifying model...\n') 
-                model = rnnmodels.ModelBio_Modified(
-                                                     model = model, 
-                                                     n_last_layers = n_last_layers,
-                                                     new_modules = new_modules
-                                                     )
+                model = rnnmodels.ModelBio_Modified(model = model, 
+                                                    n_last_layers = n_last_layers,
+                                                    new_modules = new_modules)
             
             # If asked freeze the hidden layer
             # Freeze the hidden layer
@@ -272,10 +263,8 @@ for combo_index, combination in enumerate(all_combos):
                 values, names = auxfun.get_model_params(model)
             
                 # Hidden is the parameter with names[1]
-                model = auxfun.freeze_params(
-                                              model,
-                                              params_to_freeze=names[1]
-                                              )
+                model = auxfun.freeze_params(model,
+                                             params_to_freeze = names[1])
             
             # Send model to device - this has to be prior to the 
             # optimizer definition!             
@@ -319,8 +308,7 @@ for combo_index, combination in enumerate(all_combos):
                                                 metrics = metrics,
                                                 store_every_epoch = 10,
                                                 folder_save_model = results_folder / str(combo_index),
-                                                iteration = it
-                                                )
+                                                iteration = it)
      
             # Keep the train and val losses for the model for this iteration 
             train_loss_all.append(loss[0])

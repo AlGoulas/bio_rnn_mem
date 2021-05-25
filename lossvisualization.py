@@ -82,12 +82,10 @@ for current_folder in all_results_folders:
         (raw_results,  
         quantities_on_results,
         ep,
-        iterations) = auxfun.read_results(
-                                           results_folder = current_folder,  
-                                           results_id = folder_count,
-                                           start = 1,
-                                           stop = None
-                                           )
+        iterations) = auxfun.read_results(results_folder = current_folder,  
+                                          results_id = folder_count,
+                                          start = 1,
+                                          stop = None)
     
         # Store in the list the quantities_on_results 
         if current_results_quantities:                               
@@ -126,17 +124,16 @@ for folder_count in range(len(folder_indexes)):
         eval_labels.append('train')
         cat_labels.extend([results_labels[results_folder]] * 2)#labels for results folders  
     
-    visfun.visualize_mean_std_mult(
-                                    values_to_plot = values_to_plot, 
-                                    cat_labels = cat_labels, 
-                                    bin_labels = eval_labels,
-                                    ep = ep, 
-                                    title = all_combinations_str[folder_count],
-                                    xlabel = 'epochs',
-                                    ylabel = ylabel,
-                                    path_save = path_save,
-                                    file_prefix = '_loss',
-                                    palette = sns.color_palette('mako_r', 
+    visfun.visualize_mean_std_mult(values_to_plot = values_to_plot, 
+                                   cat_labels = cat_labels, 
+                                   bin_labels = eval_labels,
+                                   ep = ep, 
+                                   title = all_combinations_str[folder_count],
+                                   xlabel = 'epochs',
+                                   ylabel = ylabel,
+                                   path_save = path_save,
+                                   file_prefix = '_loss',
+                                   palette = sns.color_palette('mako_r', 
                                                                 len(all_results_folders))
                                    )        
    
@@ -156,27 +153,23 @@ if 'validate_metrics' in raw_results.keys():
             eval_labels.append('train')
             cat_labels.extend([results_labels[results_folder]] * 2)#labels for results folders  
         
-        visfun.visualize_mean_std_mult(
-                                        values_to_plot = values_to_plot, 
-                                        cat_labels = cat_labels, 
-                                        bin_labels = eval_labels,
-                                        ep = ep, 
-                                        title = all_combinations_str[folder_count],
-                                        xlabel = 'epochs',
-                                        ylabel = 'acc',
-                                        path_save = path_save,
-                                        file_prefix = '_metrics',
-                                        palette = sns.color_palette('mako_r', 
+        visfun.visualize_mean_std_mult(values_to_plot = values_to_plot, 
+                                       cat_labels = cat_labels, 
+                                       bin_labels = eval_labels,
+                                       ep = ep, 
+                                       title = all_combinations_str[folder_count],
+                                       xlabel = 'epochs',
+                                       ylabel = 'acc',
+                                       path_save = path_save,
+                                       file_prefix = '_metrics',
+                                       palette = sns.color_palette('mako_r', 
                                                                     len(all_results_folders))
                                        )    
     
 # Visualize by filtering params
 new_labels = auxfun.extend_list(list_to_ext = all_combinations_str_cleaned, 
-                                 ext = iterations
-                                 )
-
+                                ext = iterations)
 extend_by = len(all_results_folders)
-
 data_frame = {
              'lr': new_labels[0] * extend_by,
              'activation': new_labels[1] * extend_by,
@@ -194,94 +187,76 @@ filters = None
 values = None
 category =[]
 for results_folder in range(len(all_results_folders)):
-     values = auxfun.concatenate_arrays(
-                                master_container = values,
-                                leech = all_current_results_quantities[results_folder][0],
-                                mode = 'h'
-                                )
-     
+     values = auxfun.concatenate_arrays(master_container = values,
+                                        leech = all_current_results_quantities[results_folder][0],
+                                        mode = 'h')
      category.extend([results_labels[results_folder]] * len(all_current_results_quantities[results_folder][0]))
-     
 data_frame['values'] = values 
 data_frame['grouping'] = category
-
 file_name = 'loss'
 # Add extensions to the name of the file so we keep track the filters used
 if filters is not None:
     for key, value in filters.items():
         file_name = file_name + '_' + value
-
 df = pd.DataFrame(data_frame)
 visfun.visualize_data_frame(df = df, 
-                             filters = filters,
-                             xlabel = 'topology', 
-                             ylabel = 'loss (NLL)',
-                             file_name = file_name, 
-                             path_save = path_save,
-                             palette = sns.color_palette('mako_r', 
+                            filters = filters,
+                            xlabel = 'topology', 
+                            ylabel = 'loss (NLL)',
+                            file_name = file_name, 
+                            path_save = path_save,
+                            palette = sns.color_palette('mako_r', 
                                                          len(all_results_folders))
-                             )
+                            )
 
 # Visualize min epoch where min loss was achieved
 values = None
 category =[]
 for results_folder in range(len(all_results_folders)):
-     values = auxfun.concatenate_arrays(
-                                master_container = values,
-                                leech = all_current_results_quantities[results_folder][1],
-                                mode = 'h'
-                                )
-     
+     values = auxfun.concatenate_arrays(master_container = values,
+                                        leech = all_current_results_quantities[results_folder][1],
+                                        mode = 'h')
      category.extend([results_labels[results_folder]] * len(all_current_results_quantities[results_folder][1]))
-     
 data_frame['values'] = values 
 data_frame['grouping'] = category
-
 file_name = 'min_epoch_loss'
 # Add extensions to the name of the file so we keep track the filters used
 if filters is not None:
     for key, value in filters.items():
         file_name = file_name + '_' + value
-
 df = pd.DataFrame(data_frame)
 visfun.visualize_data_frame(df = df, 
-                             filters = filters,
-                             xlabel = 'topology', 
-                             ylabel = 'min epoch loss',
-                             file_name = file_name, 
-                             path_save = path_save,
-                             palette = sns.color_palette('mako_r', 
+                            filters = filters,
+                            xlabel = 'topology', 
+                            ylabel = 'min epoch loss',
+                            file_name = file_name, 
+                            path_save = path_save,
+                            palette = sns.color_palette('mako_r', 
                                                          len(all_results_folders))
-                             )
+                            )
 
 # Visualize min perc epoch where min loss was achieved
 values = None
 category =[]
 for results_folder in range(len(all_results_folders)):
-     values = auxfun.concatenate_arrays(
-                                master_container = values,
-                                leech = all_current_results_quantities[results_folder][2],
-                                mode = 'h'
-                                )
-     
+     values = auxfun.concatenate_arrays(master_container = values,
+                                        leech = all_current_results_quantities[results_folder][2],
+                                        mode = 'h')
      category.extend([results_labels[results_folder]] * len(all_current_results_quantities[results_folder][2]))
-     
 data_frame['values'] = values 
 data_frame['grouping'] = category
-
 file_name = '99% min_epoch_loss'
 # Add extensions to the name of the file so we keep track the filters used
 if filters is not None:
     for key, value in filters.items():
         file_name = file_name + '_' + value
-
 df = pd.DataFrame(data_frame)
 visfun.visualize_data_frame(df = df, 
-                             filters = filters,
-                             xlabel = 'topology', 
-                             ylabel = '99% min epoch loss',
-                             file_name = file_name, 
-                             path_save = path_save,
-                             palette = sns.color_palette('mako_r', 
+                            filters = filters,
+                            xlabel = 'topology', 
+                            ylabel = '99% min epoch loss',
+                            file_name = file_name, 
+                            path_save = path_save,
+                            palette = sns.color_palette('mako_r', 
                                                          len(all_results_folders))
-                             )
+                            )

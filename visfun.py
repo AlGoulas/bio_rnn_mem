@@ -8,11 +8,11 @@ import seaborn as sns
 import auxfun
 
 # Visualize boxplot with seaborn
-def vis_boxplot(values=None, grouping=None,
-                xlabel=None, ylabel=None,
-                file_name=None, path_save=None):
-    '''
-    Visualize values as boxplots based on the categorical variable
+def vis_boxplot(values = None, 
+                grouping = None,
+                xlabel = None, ylabel = None,
+                file_name = None, path_save = None):
+    '''Visualize values as boxplots based on the categorical variable
     
     Input
     -----
@@ -43,16 +43,12 @@ def vis_boxplot(values=None, grouping=None,
     # Aseemble the values and grouping variables in a dataframe to be used 
     #from seaborn
     df = pd.DataFrame(data_frame)
-    
     fig = plt.figure()
     fig.set_size_inches(10, 10)  
-    ax = sns.boxplot(
-                    x='grouping', 
-                    y='values', 
-                    data=df, 
-                    palette='ch:2.5,.25'
-                    )
-    
+    ax = sns.boxplot(x='grouping', 
+                     y='values', 
+                     data=df, 
+                     palette='ch:2.5,.25')
     ax.set(xlabel=xlabel, ylabel=ylabel)
     
     # If a path is specififed, then save the figure as .svg
@@ -61,15 +57,14 @@ def vis_boxplot(values=None, grouping=None,
         file_to_save= path_save / file_name
         plt.savefig(file_to_save, format='svg')
 
-def visualize_data_frame(df=None, 
-                         filters=None,
-                         xlabel=None, 
-                         ylabel=None,
-                         file_name=None, 
-                         path_save=None,
-                         palette=None):
-    '''
-    Visualize dataframe df with seaborn as a boxplot. 
+def visualize_data_frame(df = None, 
+                         filters = None,
+                         xlabel = None, 
+                         ylabel = None,
+                         file_name = None, 
+                         path_save = None,
+                         palette = None):
+    '''Visualize dataframe df with seaborn as a boxplot. 
     
     If a filter dictionary is specified, then the dataframe df will be 
     filtered to only visualize data corresponding to the dataframe keys 
@@ -115,15 +110,12 @@ def visualize_data_frame(df=None,
     sns.set(font_scale=2)
     sns.set_style('white') 
     
-    ax = sns.boxplot(
-                    x='grouping', 
-                    y='values', 
-                    data=df, 
-                    palette=palette
-                    )
-    
+    ax = sns.boxplot(x = 'grouping', 
+                     y = 'values', 
+                     data = df, 
+                     palette = palette)
     if xlabel is not None and ylabel is not None:
-        ax.set(xlabel=xlabel, ylabel=ylabel)
+        ax.set(xlabel = xlabel, ylabel = ylabel)
     
     # If a path is specififed, then save the figure as .svg
     if path_save is not None:
@@ -132,21 +124,17 @@ def visualize_data_frame(df=None,
         plt.savefig(file_to_save, format='svg')
 
 # Visualize the mean and std of multiple quantities 
-def visualize_mean_std_mult(
-                           values_to_plot=None, 
-                           cat_labels=None, 
-                           bin_labels=None,
-                           ep=None, 
-                           title=None, 
-                           xlabel=None, 
-                           ylabel=None,
-                           path_save=None, 
-                           file_prefix=None,
-                           palette=None
-                           ):
-    
-    '''
-    Plot with seaborn the values_to_plot as a lineplot (mean±std).
+def visualize_mean_std_mult(values_to_plot = None, 
+                            cat_labels = None, 
+                            bin_labels = None,
+                            ep = None, 
+                            title = None, 
+                            xlabel = None, 
+                            ylabel = None,
+                            path_save = None, 
+                            file_prefix = None,
+                            palette = None):
+    '''Plot with seaborn the values_to_plot as a lineplot (mean±std).
     
     Input
     -----
@@ -200,18 +188,14 @@ def visualize_mean_std_mult(
     for v, values in enumerate(values_to_plot):
           current_values = np.reshape(values, 
                                      (values.size), 
-                                     'C'
-                                     )
+                                     'C')
+          all_values = auxfun.concatenate_arrays(master_container = all_values,
+                                                 leech = current_values,
+                                                 mode='h')
           
-          all_values = auxfun.concatenate_arrays(master_container=all_values,
-                                          leech=current_values,
-                                          mode='h'
-                                          )
-          
-          all_epochs = auxfun.concatenate_arrays(master_container=all_epochs,
-                                          leech=epochs,
-                                          mode='h'
-                                          )
+          all_epochs = auxfun.concatenate_arrays(master_container = all_epochs,
+                                                 leech = epochs,
+                                                 mode = 'h')
           
           b = [bin_labels[v]] * len(current_values) 
           c = [cat_labels[v]] * len(current_values)
@@ -235,21 +219,18 @@ def visualize_mean_std_mult(
     sns.set(font_scale=2)
     sns.set_style('white') 
     
-    ax = sns.lineplot(
-                     x='epochs', 
-                     y='loss', 
-                     hue='topology',
-                     style='train/test',
-                     data=df,
-                     palette=palette,
-                     ci='sd'
-                     )
+    ax = sns.lineplot(x='epochs', 
+                      y='loss', 
+                      hue='topology',
+                      style='train/test',
+                      data=df,
+                      palette=palette,
+                      ci='sd')
     
-    ax.set(xlabel=xlabel, ylabel=ylabel)
-    
+    ax.set(xlabel = xlabel, ylabel = ylabel)
     if title is not None:
         ax.set_title(title)
-        
+
     # If a path is specififed, the save the figure as .svg
     if path_save is not None:
         file_name = title.rstrip() + file_prefix + '.svg'

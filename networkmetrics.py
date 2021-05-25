@@ -3,11 +3,11 @@
 import numpy as np
 import torch
 
-def rand_net(A, freeze_diag=True):
-    ''''
-    Randomize the elements of a 2D tensor.
-    
-    Input:
+def rand_net(A, freeze_diag = True):
+    '''Randomize the elements of a 2D tensor.
+
+    Input
+    -----
         
     A: tensor
         a 2D tensor (e.g., from PyTorch)
@@ -16,7 +16,8 @@ def rand_net(A, freeze_diag=True):
         indicating if diagonal values should be randomized (=True) 
         or not (=False).
     
-    Output:
+    Output
+    ------
         
     X: tensor
         a 2D tensor with randomized values from tensor A
@@ -54,9 +55,7 @@ def rand_net(A, freeze_diag=True):
         X = X + X.transpose(0,1)# transpose to symmetrize  
         X = X + torch.diagflat(A.diag())
     else: 
-        
         nodes = A.shape[0]
-        
         if freeze_diag:
             # Make mask marking the diagonal with 1s - so we work with the 
             # 0 entries
@@ -82,10 +81,8 @@ def rand_net(A, freeze_diag=True):
     
     return X
 
-#Check is a 2D numpy array is symmetric
 def check_symmetric(X):
-    ''' 
-    Check is a 2D numpy array is symmetric: if A[i,j] !=0 then A[j,i] !=0   
+    ''' Check is a 2D numpy array is symmetric: if A[i,j] !=0 then A[j,i] !=0   
     for every i,j.
     Thus, no weights are taken into account to decide if symmetry exists.
     
